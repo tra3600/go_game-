@@ -376,6 +376,22 @@ std::vector<std::vector<std::string>> GoGame::atariGroups(char player) const {
     return result;
 }
 
+void GoGame::dangerStats(char player, int& atariStones, int& twoLibertyStones) const {
+    atariStones = 0;
+    twoLibertyStones = 0;
+    std::vector<std::vector<bool>> counted(size, std::vector<bool>(size, false));
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (board[r][c] != player || counted[r][c]) continue;
+            Group g;
+            int libs = collectGroup(board, r, c, g);
+            for (auto& [gr, gc] : g) counted[gr][gc] = true;
+            if (libs == 1) atariStones += static_cast<int>(g.size());
+            else if (libs == 2) twoLibertyStones += static_cast<int>(g.size());
+        }
+    }
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);

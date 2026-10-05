@@ -68,6 +68,8 @@ public:
     std::vector<std::vector<std::string>> atariGroups(char player) const;
     // Groups/stones of `player` that the opponent can legally capture with his next move.
     void capturable(char player, int& groups, int& stones) const;
+    // Stones of `player` in groups with 1 liberty (atari) and with exactly 2 liberties.
+    void dangerStats(char player, int& atariStones, int& twoLibertyStones) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board

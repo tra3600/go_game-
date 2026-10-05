@@ -290,6 +290,20 @@ void printCapturable(const GoGame& game) {
               << "(Groupes en atari que l'adversaire peut legalement capturer ; le ko est pris en compte.)\n";
 }
 
+void printDanger(const GoGame& game) {
+    int total = 0;
+    std::string lines;
+    for (char p : {GoGame::BLACK, GoGame::WHITE}) {
+        int atari, two;
+        game.dangerStats(p, atari, two);
+        total += atari + two;
+        lines += "  " + nameOf(p) + " (" + p + ") : " + std::to_string(atari + two) + " pierre(s) en danger (" +
+                 std::to_string(atari) + " en atari, " + std::to_string(two) + " a deux libertes)\n";
+    }
+    std::cout << "Pierres en danger : " << total << "\n" << lines
+              << "(Danger = groupe avec 1 liberte (atari) ou 2 libertes.)\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -309,6 +323,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"dg", "nbdanger"},
     {"cp", "nbcapturables"},
     {"at", "nbatari"},
     {"nn", "nbneutres"},
@@ -560,11 +575,12 @@ void printHelp() {
               << "  nbneutres             afficher le nombre de points neutres (dame)\n"
               << "  nbatari               afficher le nombre de pierres en atari (une seule liberte)\n"
               << "  nbcapturables         afficher le nombre de pierres capturables au prochain coup\n"
+              << "  nbdanger              afficher le nombre de pierres en danger (1 ou 2 libertes)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbdanger', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -740,6 +756,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbcapturables") {
             printCapturable(game);
+            continue;
+        }
+        if (word == "nbdanger") {
+            printDanger(game);
             continue;
         }
         if (word == "score") {
@@ -938,6 +958,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbcapturables") {
                 printCapturable(game);
+                continue;
+            }
+            if (word == "nbdanger") {
+                printDanger(game);
                 continue;
             }
             if (word == "score") {
