@@ -23,7 +23,8 @@ public:
 
     explicit GoGame(int size, double komi = 6.5);
 
-    void printBoard() const;
+    // With highlightLast, the last stone played is shown in parentheses, e.g. "(B)".
+    void printBoard(bool highlightLast = false) const;
     MoveResult placeStone(int row, int col, char player);
     void pass(char player);
     bool isOver() const { return consecutivePasses >= 2; }
@@ -45,6 +46,7 @@ public:
 
     // One entry per move, e.g. "B D4" or "W pass" (columns A-T without I, row 1 at the bottom).
     std::vector<std::string> moveList() const;
+    bool hasLastStone() const { return !moves.empty() && !moves.back().isPass; }
 
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.

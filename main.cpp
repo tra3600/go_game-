@@ -104,6 +104,16 @@ void komiCommand(GoGame& game, std::string arg) {
     std::cout << "Komi invalide (nombre entre -50 et 50, ex: komi 7.5).\n";
 }
 
+void showLastMove(const GoGame& game) {
+    if (game.moveList().empty()) {
+        std::cout << "Aucun coup joue.\n";
+        return;
+    }
+    game.printBoard(true);
+    if (game.hasLastStone()) printLastMove(game);
+    else std::cout << "Le dernier coup est une passe (aucune pierre a montrer).\n";
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -115,11 +125,12 @@ void printHelp() {
               << "  historique | histo    afficher la liste des coups joues\n"
               << "  dernier | last        afficher le dernier coup joue\n"
               << "  komi [valeur]         afficher ou changer le komi (ex: komi 7.5)\n"
+              << "  montrer | show        afficher le plateau avec le dernier coup entre parentheses\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -173,6 +184,10 @@ int main(int argc, char** argv) {
         }
         if (word == "komi") {
             komiCommand(game, arg);
+            continue;
+        }
+        if (word == "montrer" || word == "show") {
+            showLastMove(game);
             continue;
         }
         if (word == "score") {
@@ -248,6 +263,10 @@ int main(int argc, char** argv) {
             }
             if (word == "komi") {
                 komiCommand(game, arg);
+                continue;
+            }
+            if (word == "montrer" || word == "show") {
+                showLastMove(game);
                 continue;
             }
             if (word == "score") {

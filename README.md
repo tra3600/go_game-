@@ -26,5 +26,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `historique` (ou `histo`) : liste tous les coups joues (ex: `3. B D4`)
 - `dernier` (ou `last`) : affiche le dernier coup joue
 - `komi [valeur]` : affiche ou change le komi (defaut 6.5, sauvegarde avec la partie)
+- `montrer` (ou `show`) : affiche le plateau avec le dernier coup entre parentheses, ex: `(B)`
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

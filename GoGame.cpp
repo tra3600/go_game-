@@ -16,20 +16,25 @@ GoGame::GoGame(int size, double komi)
     history.insert(serialize(board));
 }
 
-void GoGame::printBoard() const {
+void GoGame::printBoard(bool highlightLast) const {
+    int lr = -1, lc = -1;
+    if (highlightLast && hasLastStone()) { lr = moves.back().row; lc = moves.back().col; }
     std::cout << "\n   ";
     for (int c = 0; c < size; ++c) std::cout << COLUMNS[c] << ' ';
     std::cout << '\n';
     for (int r = 0; r < size; ++r) {
         int label = size - r;
         if (label < 10) std::cout << ' ';
-        std::cout << label << ' ';
+        std::cout << label;
         for (int c = 0; c < size; ++c) {
             char ch = board[r][c];
             if (dead[r][c]) ch = static_cast<char>(std::tolower(ch));  // marked dead
-            std::cout << ch << ' ';
+            char sep = ' ';
+            if (r == lr && c == lc) sep = '(';
+            else if (r == lr && c == lc + 1) sep = ')';
+            std::cout << sep << ch;
         }
-        std::cout << label << '\n';
+        std::cout << (r == lr && lc == size - 1 ? ')' : ' ') << label << '\n';
     }
     std::cout << "   ";
     for (int c = 0; c < size; ++c) std::cout << COLUMNS[c] << ' ';
