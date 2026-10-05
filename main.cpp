@@ -114,6 +114,36 @@ void showLastMove(const GoGame& game) {
     else std::cout << "Le dernier coup est une passe (aucune pierre a montrer).\n";
 }
 
+// Starts a fresh game on another board size (komi kept). Asks for confirmation if a game is in progress.
+void sizeCommand(GoGame& game, char& player, int& size, const std::string& arg) {
+    if (arg.empty()) {
+        std::cout << "Taille actuelle : " << size << "x" << size << "\n";
+        return;
+    }
+    int n = 0;
+    try {
+        size_t used = 0;
+        n = std::stoi(arg, &used);
+        if (used != arg.size()) n = 0;
+    } catch (...) {}
+    if (n < 5 || n > 19) {
+        std::cout << "Taille invalide (entre 5 et 19, ex: taille 13).\n";
+        return;
+    }
+    if (!game.moveList().empty()) {
+        std::cout << "Cela efface la partie en cours. Confirmer (o/n) ? ";
+        std::string answer;
+        if (!std::getline(std::cin, answer) || (answer != "o" && answer != "O" && answer != "oui")) {
+            std::cout << "Changement annule.\n";
+            return;
+        }
+    }
+    game = GoGame(n, game.getKomi());
+    player = GoGame::BLACK;
+    size = n;
+    std::cout << "Nouvelle partie sur un plateau " << n << "x" << n << ".\n";
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -126,6 +156,7 @@ void printHelp() {
               << "  dernier | last        afficher le dernier coup joue\n"
               << "  komi [valeur]         afficher ou changer le komi (ex: komi 7.5)\n"
               << "  montrer | show        afficher le plateau avec le dernier coup entre parentheses\n"
+              << "  taille [n]            nouvelle partie sur un plateau n x n (5 a 19, komi conserve)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
@@ -200,6 +231,10 @@ int main(int argc, char** argv) {
         }
         if (word == "sauvegarder" || word == "save") {
             saveCommand(game, arg);
+            continue;
+        }
+        if (word == "taille" || word == "size") {
+            sizeCommand(game, player, size, arg);
             continue;
         }
         if (word == "charger" || word == "load") {
