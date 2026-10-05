@@ -211,6 +211,25 @@ void printStones(const GoGame& game, std::string arg) {
     if (wantW) show(GoGame::WHITE, "Blanc (W)");
 }
 
+void printRules() {
+    std::cout << "\nRegles du jeu de Go (version implementee)\n"
+              << "  But : controler plus de plateau que l'adversaire (pierres vivantes + territoire).\n"
+              << "  1. Noir joue en premier, puis les joueurs posent une pierre chacun leur tour\n"
+              << "     sur une intersection libre. Une pierre ne bouge plus une fois posee.\n"
+              << "  2. Liberte : intersection vide adjacente (haut, bas, gauche, droite) a un groupe.\n"
+              << "     Des pierres de meme couleur adjacentes forment un groupe.\n"
+              << "  3. Capture : un groupe qui n'a plus aucune liberte est retire du plateau\n"
+              << "     (les pierres retirees sont comptees comme captures).\n"
+              << "  4. Suicide interdit : on ne peut pas jouer une pierre qui laisse son propre groupe\n"
+              << "     sans liberte, sauf si ce coup capture des pierres adverses.\n"
+              << "  5. Ko : un coup qui recree une position deja apparue pendant la partie est interdit.\n"
+              << "  6. On peut passer. Deux passes consecutives terminent la partie.\n"
+              << "  7. Fin : les joueurs marquent les pierres mortes, puis le score est calcule par aire :\n"
+              << "     pierres vivantes + territoire (zones vides entourees par une seule couleur).\n"
+              << "  8. Komi : points ajoutes a Blanc pour compenser l'avantage de jouer en premier\n"
+              << "     (6.5 par defaut, modifiable avec la commande 'komi').\n\n";
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -229,11 +248,12 @@ void printHelp() {
               << "  stats | statistiques  afficher les statistiques de la partie\n"
               << "  pierres [noir|blanc]  lister les coordonnees des pierres sur le plateau\n"
               << "  territoire            afficher le plateau avec les territoires (+ Noir, - Blanc)\n"
+              << "  regles | rules        afficher les regles du jeu\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -311,6 +331,10 @@ int main(int argc, char** argv) {
         }
         if (word == "territoire" || word == "territory") {
             game.printTerritory();
+            continue;
+        }
+        if (word == "regles" || word == "rules") {
+            printRules();
             continue;
         }
         if (word == "score") {
@@ -414,6 +438,10 @@ int main(int argc, char** argv) {
             }
             if (word == "territoire" || word == "territory") {
                 game.printTerritory();
+                continue;
+            }
+            if (word == "regles" || word == "rules") {
+                printRules();
                 continue;
             }
             if (word == "score") {

@@ -33,5 +33,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `stats` (ou `statistiques`) : statistiques de la partie (coups, passes, pierres sur le plateau, captures, score estime)
 - `pierres [noir|blanc]` : liste les coordonnees des pierres presentes sur le plateau
 - `territoire` : affiche le plateau avec les territoires (`+` Noir, `-` Blanc) et leur taille
+- `regles` (ou `rules`) : affiche les regles du jeu telles qu'implementees
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
