@@ -44,5 +44,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `fuseau` (ou `fu`) : affiche le fuseau horaire et le decalage UTC
 - `langue` (ou `la`) : affiche la langue du jeu (francais uniquement)
 - `coups` (ou `co`) : affiche le nombre de coups joues (total et par joueur, pierres posees et passes)
+- `nbpierres` (ou `np`) : affiche le nombre de pierres sur le plateau (par couleur) et les intersections libres
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

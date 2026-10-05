@@ -172,6 +172,16 @@ void printMoveCount(const GoGame& game) {
               << "  " << nameOf(GoGame::WHITE) << " (W) : " << ws + wp << " (" << ws << " pose(s), " << wp << " passe(s))\n";
 }
 
+void printStoneCount(const GoGame& game) {
+    int b = game.stonesOnBoard(GoGame::BLACK), w = game.stonesOnBoard(GoGame::WHITE);
+    int cells = game.getSize() * game.getSize();
+    std::cout << "Pierres sur le plateau : " << b + w << "\n"
+              << "  " << nameOf(GoGame::BLACK) << " (B) : " << b << "\n"
+              << "  " << nameOf(GoGame::WHITE) << " (W) : " << w << "\n"
+              << "Intersections libres : " << cells - b - w << " sur " << cells << "\n";
+    if (game.deadCount() > 0) std::cout << "(dont " << game.deadCount() << " pierre(s) marquee(s) morte(s))\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -191,6 +201,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"np", "nbpierres"},
     {"co", "coups"},
     {"la", "langue"},
     {"fu", "fuseau"},
@@ -419,11 +430,12 @@ void printHelp() {
               << "  fuseau                afficher le fuseau horaire\n"
               << "  langue                afficher la langue du jeu\n"
               << "  coups                 afficher le nombre de coups joues\n"
+              << "  nbpierres             afficher le nombre de pierres sur le plateau\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -555,6 +567,10 @@ int main(int argc, char** argv) {
         }
         if (word == "coups" || word == "moves") {
             printMoveCount(game);
+            continue;
+        }
+        if (word == "nbpierres") {
+            printStoneCount(game);
             continue;
         }
         if (word == "score") {
@@ -709,6 +725,10 @@ int main(int argc, char** argv) {
             }
             if (word == "coups" || word == "moves") {
                 printMoveCount(game);
+                continue;
+            }
+            if (word == "nbpierres") {
+                printStoneCount(game);
                 continue;
             }
             if (word == "score") {
