@@ -59,6 +59,8 @@ public:
     void libertyStats(char player, int& groups, int& totalLiberties, int& weakest) const;
     // Number of separate territories of `player` and the number of points they cover.
     void territoryStats(char player, int& regions, int& points) const;
+    // Number of groups of `player` and the size (in stones) of the biggest one.
+    void groupStats(char player, int& groups, int& largest) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board

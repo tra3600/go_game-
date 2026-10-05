@@ -205,6 +205,20 @@ void printTerritoryCount(const GoGame& game) {
     std::cout << "Total : " << total << " territoire(s)\n";
 }
 
+void printGroupCount(const GoGame& game) {
+    int total = 0;
+    std::string lines;
+    for (char p : {GoGame::BLACK, GoGame::WHITE}) {
+        int groups, largest;
+        game.groupStats(p, groups, largest);
+        total += groups;
+        lines += "  " + nameOf(p) + " (" + p + ") : " + std::to_string(groups) + " groupe(s)";
+        if (groups > 0) lines += ", le plus gros : " + std::to_string(largest) + " pierre(s)";
+        lines += "\n";
+    }
+    std::cout << "Nombre de groupes : " << total << "\n" << lines;
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -224,6 +238,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"ng", "nbgroupes"},
     {"nt", "nbterritoires"},
     {"lt", "libertestotal"},
     {"np", "nbpierres"},
@@ -459,11 +474,12 @@ void printHelp() {
               << "  nbpierres             afficher le nombre de pierres sur le plateau\n"
               << "  libertestotal         afficher le nombre total de libertes de chaque joueur\n"
               << "  nbterritoires         afficher le nombre de territoires de chaque joueur\n"
+              << "  nbgroupes             afficher le nombre de groupes de pierres\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -607,6 +623,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbterritoires") {
             printTerritoryCount(game);
+            continue;
+        }
+        if (word == "nbgroupes") {
+            printGroupCount(game);
             continue;
         }
         if (word == "score") {
@@ -773,6 +793,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbterritoires") {
                 printTerritoryCount(game);
+                continue;
+            }
+            if (word == "nbgroupes") {
+                printGroupCount(game);
                 continue;
             }
             if (word == "score") {

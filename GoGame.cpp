@@ -293,6 +293,22 @@ void GoGame::territoryStats(char player, int& regions, int& points) const {
     }
 }
 
+void GoGame::groupStats(char player, int& groups, int& largest) const {
+    groups = 0;
+    largest = 0;
+    std::vector<std::vector<bool>> counted(size, std::vector<bool>(size, false));
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (board[r][c] != player || counted[r][c]) continue;
+            Group g;
+            collectGroup(board, r, c, g);
+            for (auto& [gr, gc] : g) counted[gr][gc] = true;
+            ++groups;
+            if (static_cast<int>(g.size()) > largest) largest = static_cast<int>(g.size());
+        }
+    }
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);
