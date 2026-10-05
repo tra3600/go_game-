@@ -31,5 +31,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `captures` (ou `prisonniers`) : affiche les pierres capturees par chaque joueur
 - `libertes <coord>` : affiche les libertes du groupe contenant la pierre (ex: `libertes D4`), signale l'atari
 - `stats` (ou `statistiques`) : statistiques de la partie (coups, passes, pierres sur le plateau, captures, score estime)
+- `pierres [noir|blanc]` : liste les coordonnees des pierres presentes sur le plateau
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

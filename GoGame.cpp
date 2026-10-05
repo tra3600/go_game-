@@ -204,6 +204,14 @@ std::string GoGame::describe(MoveResult r) {
     return "";
 }
 
+std::vector<std::string> GoGame::stonePositions(char player) const {
+    std::vector<std::string> list;
+    for (int r = 0; r < size; ++r)
+        for (int c = 0; c < size; ++c)
+            if (board[r][c] == player) list.push_back(coordName(r, c));
+    return list;
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);

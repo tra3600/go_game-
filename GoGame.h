@@ -52,6 +52,8 @@ public:
     // False if there is no stone there.
     bool groupInfo(int row, int col, std::vector<std::string>& stones, std::vector<std::string>& liberties) const;
 
+    // Coordinates ("D4") of the stones of `player` currently on the board, row by row from the top.
+    std::vector<std::string> stonePositions(char player) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board
