@@ -9,7 +9,8 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - Captures de groupes (par flood fill), compteur de captures
 - Interdiction du suicide et regle du ko (superko positionnel)
 - Passer son tour ; deux passes consecutives terminent la partie
-- Score final par aire (pierres + territoires) avec komi 6.5
+- Marquage des pierres mortes apres les deux passes (groupe entier, bascule par clic de coordonnee, `ok` pour valider)
+- Score final par aire (pierres vivantes + territoires) avec komi 6.5
 
 ## Compilation et execution
 

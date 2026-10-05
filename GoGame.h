@@ -28,6 +28,10 @@ public:
     void pass(char player);
     bool isOver() const { return consecutivePasses >= 2; }
 
+    // Dead-stone marking (after both players passed): toggles the whole group at (row,col).
+    bool toggleDead(int row, int col);
+    int deadCount() const;
+
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
     void computeScore(double& blackScore, double& whiteScore) const;
@@ -41,6 +45,7 @@ private:
     double komi;
     std::vector<std::vector<char>> board;
     std::set<std::string> history;  // positional superko
+    std::vector<std::vector<bool>> dead;
     int consecutivePasses = 0;
     int capturedByBlack = 0;
     int capturedByWhite = 0;

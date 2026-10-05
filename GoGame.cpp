@@ -1,4 +1,5 @@
 #include "GoGame.h"
+#include <cctype>
 #include <iostream>
 
 namespace {
@@ -8,7 +9,8 @@ const char* COLUMNS = "ABCDEFGHJKLMNOPQRST";  // no 'I', as in standard Go notat
 }
 
 GoGame::GoGame(int size, double komi)
-    : size(size), komi(komi), board(size, std::vector<char>(size, EMPTY)) {
+    : size(size), komi(komi), board(size, std::vector<char>(size, EMPTY)),
+      dead(size, std::vector<bool>(size, false)) {
     history.insert(serialize(board));
 }
 
@@ -20,7 +22,11 @@ void GoGame::printBoard() const {
         int label = size - r;
         if (label < 10) std::cout << ' ';
         std::cout << label << ' ';
-        for (int c = 0; c < size; ++c) std::cout << board[r][c] << ' ';
+        for (int c = 0; c < size; ++c) {
+            char ch = board[r][c];
+            if (dead[r][c]) ch = static_cast<char>(std::tolower(ch));  // marked dead
+            std::cout << ch << ' ';
+        }
         std::cout << label << '\n';
     }
     std::cout << "   ";
@@ -100,13 +106,30 @@ void GoGame::pass(char) {
     ++consecutivePasses;
 }
 
+bool GoGame::toggleDead(int row, int col) {
+    if (!inBoard(row, col) || board[row][col] == EMPTY) return false;
+    Group g;
+    collectGroup(board, row, col, g);
+    bool mark = !dead[row][col];
+    for (auto& [r, c] : g) dead[r][c] = mark;
+    return true;
+}
+
+int GoGame::deadCount() const {
+    int n = 0;
+    for (const auto& row : dead) for (bool d : row) n += d;
+    return n;
+}
+
 void GoGame::computeScore(double& blackScore, double& whiteScore) const {
     int black = 0, white = 0;
     std::vector<std::vector<bool>> seen(size, std::vector<bool>(size, false));
     for (int r = 0; r < size; ++r) {
         for (int c = 0; c < size; ++c) {
-            if (board[r][c] == BLACK) { ++black; continue; }
-            if (board[r][c] == WHITE) { ++white; continue; }
+            if (board[r][c] != EMPTY && !dead[r][c]) {
+                (board[r][c] == BLACK ? black : white) += 1;
+                continue;
+            }
             if (seen[r][c]) continue;
             // Flood an empty region and see which colours border it.
             int area = 0;
@@ -120,7 +143,7 @@ void GoGame::computeScore(double& blackScore, double& whiteScore) const {
                 for (int d = 0; d < 4; ++d) {
                     int nr = cr + DR[d], nc = cc + DC[d];
                     if (!inBoard(nr, nc)) continue;
-                    char v = board[nr][nc];
+                    char v = dead[nr][nc] ? EMPTY : board[nr][nc];
                     if (v == BLACK) touchesB = true;
                     else if (v == WHITE) touchesW = true;
                     else if (!seen[nr][nc]) { seen[nr][nc] = true; stack.push_back({nr, nc}); }

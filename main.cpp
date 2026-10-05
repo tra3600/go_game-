@@ -90,6 +90,25 @@ int main() {
         player = GoGame::opponent(player);
     }
 
+    if (game.isOver()) {
+        std::cout << "\nMarquage des pierres mortes : entrez une pierre (ex: D4) pour marquer/demarquer\n"
+                  << "son groupe (affiche en minuscule), puis 'ok' pour valider le score.\n";
+        while (true) {
+            game.printBoard();
+            std::cout << "Mort > ";
+            std::string line;
+            if (!std::getline(std::cin, line)) break;
+            std::string cmd;
+            for (char ch : line) cmd += static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+            while (!cmd.empty() && std::isspace(static_cast<unsigned char>(cmd.back()))) cmd.pop_back();
+            if (cmd == "ok" || cmd == "done") break;
+            if (cmd == "quit" || cmd == "q") return 0;
+            int row, col;
+            if (!parseMove(line, size, row, col) || !game.toggleDead(row, col))
+                std::cout << "Choisissez une pierre presente sur le plateau.\n";
+        }
+    }
+
     game.printBoard();
     double b, w;
     game.computeScore(b, w);
