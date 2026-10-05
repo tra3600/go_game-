@@ -50,6 +50,8 @@ public:
     // Area scoring (stones + surrounded territory), komi added to White.
     void computeScore(double& blackScore, double& whiteScore) const;
 
+    double getKomi() const { return komi; }
+    void setKomi(double k) { komi = k; }
     int getSize() const { return size; }
     static char opponent(char player) { return player == BLACK ? WHITE : BLACK; }
     static std::string describe(MoveResult r);

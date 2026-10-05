@@ -11,7 +11,7 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - Passer son tour ; deux passes consecutives terminent la partie
 - `annuler` : annule le dernier coup ou la derniere passe (autant de fois que voulu, y compris depuis la phase de marquage)
 - Marquage des pierres mortes apres les deux passes (groupe entier, bascule par clic de coordonnee, `ok` pour valider, `reprendre` pour continuer la partie en cas de desaccord)
-- Score final par aire (pierres vivantes + territoires) avec komi 6.5
+- Score final par aire (pierres vivantes + territoires) avec komi reglable (6.5 par defaut)
 
 ## Compilation et execution
 
@@ -25,5 +25,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `score` : affiche le score en cours (aire + komi, estimation)
 - `historique` (ou `histo`) : liste tous les coups joues (ex: `3. B D4`)
 - `dernier` (ou `last`) : affiche le dernier coup joue
+- `komi [valeur]` : affiche ou change le komi (defaut 6.5, sauvegarde avec la partie)
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

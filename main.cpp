@@ -86,6 +86,24 @@ void printLastMove(const GoGame& game) {
     else std::cout << "Dernier coup (n." << list.size() << ") : " << list.back() << "\n";
 }
 
+void komiCommand(GoGame& game, std::string arg) {
+    if (arg.empty()) {
+        std::cout << "Komi actuel : " << game.getKomi() << "\n";
+        return;
+    }
+    for (char& ch : arg) if (ch == ',') ch = '.';
+    try {
+        size_t used = 0;
+        double k = std::stod(arg, &used);
+        if (used == arg.size() && k >= -50 && k <= 50) {
+            game.setKomi(k);
+            std::cout << "Komi fixe a " << k << ".\n";
+            return;
+        }
+    } catch (...) {}
+    std::cout << "Komi invalide (nombre entre -50 et 50, ex: komi 7.5).\n";
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -96,11 +114,12 @@ void printHelp() {
               << "  score                 afficher le score en cours (estimation)\n"
               << "  historique | histo    afficher la liste des coups joues\n"
               << "  dernier | last        afficher le dernier coup joue\n"
+              << "  komi [valeur]         afficher ou changer le komi (ex: komi 7.5)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -150,6 +169,10 @@ int main(int argc, char** argv) {
         }
         if (word == "dernier" || word == "last") {
             printLastMove(game);
+            continue;
+        }
+        if (word == "komi") {
+            komiCommand(game, arg);
             continue;
         }
         if (word == "score") {
@@ -223,6 +246,10 @@ int main(int argc, char** argv) {
                 printLastMove(game);
                 continue;
             }
+            if (word == "komi") {
+                komiCommand(game, arg);
+                continue;
+            }
             if (word == "score") {
                 printScore(game);
                 continue;
@@ -259,7 +286,7 @@ int main(int argc, char** argv) {
     game.printBoard();
     double b, w;
     game.computeScore(b, w);
-    std::cout << "Partie terminee. Score (aire + komi 6.5) - Noir : " << b << " | Blanc : " << w << "\n";
+    std::cout << "Partie terminee. Score (aire + komi) - Noir : " << b << " | Blanc : " << w << "\n";
     std::cout << (b > w ? "Noir gagne" : "Blanc gagne") << " de " << (b > w ? b - w : w - b) << " points.\n";
     return 0;
 }
