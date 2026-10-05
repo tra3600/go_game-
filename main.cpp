@@ -50,14 +50,33 @@ int readBoardSize() {
     }
 }
 
-// Splits "commande argument" : returns the lowercase command, `arg` receives the rest (case preserved).
+// Two-letter shortcuts (never valid coordinates, so they cannot clash with "D4"-style moves).
+struct Shortcut { const char* alias; const char* command; };
+const Shortcut SHORTCUTS[] = {
+    {"sc", "score"},       {"st", "stats"},        {"de", "dernier"},   {"mo", "montrer"},
+    {"ca", "captures"},    {"te", "territoire"},   {"li", "libertes"},  {"re", "regles"},
+    {"hi", "historique"},  {"pi", "pierres"},      {"sv", "sauvegarder"}, {"ch", "charger"},
+    {"ta", "taille"},      {"ai", "aide"},
+};
+
+// Splits "commande argument" : returns the lowercase command (shortcuts expanded),
+// `arg` receives the rest (case preserved).
 std::string splitCommand(const std::string& line, std::string& arg) {
     std::istringstream in(line);
     std::string word;
     in >> word;
     std::getline(in >> std::ws, arg);
     for (char& ch : word) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    for (const Shortcut& s : SHORTCUTS)
+        if (word == s.alias) return s.command;
     return word;
+}
+
+void printShortcuts() {
+    std::cout << "\nRaccourcis :\n"
+              << "  p  = pass       u  = annuler      q  = quit       h ou ?  = aide\n";
+    for (const Shortcut& s : SHORTCUTS) std::cout << "  " << s.alias << " = " << s.command << "\n";
+    std::cout << "\n";
 }
 
 void printScore(const GoGame& game) {
@@ -249,11 +268,12 @@ void printHelp() {
               << "  pierres [noir|blanc]  lister les coordonnees des pierres sur le plateau\n"
               << "  territoire            afficher le plateau avec les territoires (+ Noir, - Blanc)\n"
               << "  regles | rules        afficher les regles du jeu\n"
+              << "  raccourcis            afficher les raccourcis clavier\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -335,6 +355,10 @@ int main(int argc, char** argv) {
         }
         if (word == "regles" || word == "rules") {
             printRules();
+            continue;
+        }
+        if (word == "raccourcis" || word == "shortcuts") {
+            printShortcuts();
             continue;
         }
         if (word == "score") {
@@ -442,6 +466,10 @@ int main(int argc, char** argv) {
             }
             if (word == "regles" || word == "rules") {
                 printRules();
+                continue;
+            }
+            if (word == "raccourcis" || word == "shortcuts") {
+                printShortcuts();
                 continue;
             }
             if (word == "score") {
