@@ -257,6 +257,25 @@ void printNeutralCount(const GoGame& game) {
               << " n'appartiennent a aucun camp. Elles ne comptent pour personne dans le score.)\n";
 }
 
+void printAtariCount(const GoGame& game) {
+    int totalStones = 0;
+    std::string lines;
+    for (char p : {GoGame::BLACK, GoGame::WHITE}) {
+        auto groups = game.atariGroups(p);
+        int stones = 0;
+        std::string detail;
+        for (const auto& g : groups) {
+            stones += static_cast<int>(g.size());
+            detail += (detail.empty() ? "" : " ; ");
+            for (size_t i = 0; i < g.size(); ++i) detail += (i ? "," : "") + g[i];
+        }
+        totalStones += stones;
+        lines += "  " + nameOf(p) + " (" + p + ") : " + std::to_string(stones) + " pierre(s) en atari, " +
+                 std::to_string(groups.size()) + " groupe(s)" + (detail.empty() ? "" : " [" + detail + "]") + "\n";
+    }
+    std::cout << "Pierres en atari : " << totalStones << "\n" << lines;
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -276,6 +295,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"at", "nbatari"},
     {"nn", "nbneutres"},
     {"nv", "nbvivantes"},
     {"po", "nbposees"},
@@ -523,11 +543,12 @@ void printHelp() {
               << "  nbposees              afficher le nombre de pierres posees\n"
               << "  nbvivantes            afficher le nombre de pierres vivantes\n"
               << "  nbneutres             afficher le nombre de points neutres (dame)\n"
+              << "  nbatari               afficher le nombre de pierres en atari (une seule liberte)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -695,6 +716,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbneutres") {
             printNeutralCount(game);
+            continue;
+        }
+        if (word == "nbatari") {
+            printAtariCount(game);
             continue;
         }
         if (word == "score") {
@@ -885,6 +910,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbneutres") {
                 printNeutralCount(game);
+                continue;
+            }
+            if (word == "nbatari") {
+                printAtariCount(game);
                 continue;
             }
             if (word == "score") {

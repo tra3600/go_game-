@@ -53,5 +53,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `nbposees` (ou `po`) : nombre de pierres posees par chaque joueur, restantes sur le plateau et capturees
 - `nbvivantes` (ou `nv`) : nombre de pierres vivantes par couleur (plateau moins pierres marquees mortes)
 - `nbneutres` (ou `nn`) : nombre de points neutres (dame), c'est-a-dire d'intersections libres qui n'appartiennent a aucun camp
+- `nbatari` (ou `at`) : nombre de pierres en atari (groupes a une seule liberte), avec leurs coordonnees
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

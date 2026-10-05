@@ -64,6 +64,8 @@ public:
     void groupStats(char player, int& groups, int& largest) const;
     // Empty (or dead-marked) points that belong to nobody (dame).
     int neutralPoints() const;
+    // Groups of `player` with exactly one liberty (in atari), each as its list of stone coordinates.
+    std::vector<std::vector<std::string>> atariGroups(char player) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board

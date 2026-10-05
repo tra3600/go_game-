@@ -323,6 +323,24 @@ int GoGame::neutralPoints() const {
     return n;
 }
 
+std::vector<std::vector<std::string>> GoGame::atariGroups(char player) const {
+    std::vector<std::vector<std::string>> result;
+    std::vector<std::vector<bool>> counted(size, std::vector<bool>(size, false));
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (board[r][c] != player || counted[r][c]) continue;
+            Group g;
+            int libs = collectGroup(board, r, c, g);
+            for (auto& [gr, gc] : g) counted[gr][gc] = true;
+            if (libs != 1) continue;
+            std::vector<std::string> names;
+            for (auto& [gr, gc] : g) names.push_back(coordName(gr, gc));
+            result.push_back(names);
+        }
+    }
+    return result;
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);
