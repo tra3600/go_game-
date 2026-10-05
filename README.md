@@ -22,5 +22,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 
 - `D4` : colonne D, ligne 4 (ligne 1 en bas) ; ou `ligne colonne` (ex: `4 4`, depuis le haut gauche)
 - `sauvegarder [fichier]` : sauvegarde la partie (defaut `partie.go`) ; `charger [fichier]` la recharge, avec annulation et ko conserves. On peut aussi lancer `./go_game partie.go`
+- `score` : affiche le score en cours (aire + komi, estimation)
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
