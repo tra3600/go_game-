@@ -60,6 +60,20 @@ std::string splitCommand(const std::string& line, std::string& arg) {
     return word;
 }
 
+void printHelp() {
+    std::cout << "\nCommandes :\n"
+              << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
+              << "  pass | p              passer (deux passes de suite = fin de partie)\n"
+              << "  annuler | undo | u    annuler le dernier coup ou la derniere passe\n"
+              << "  sauvegarder [fichier] sauvegarder la partie (defaut : partie.go)\n"
+              << "  charger [fichier]     charger une partie sauvegardee\n"
+              << "  aide | help | ?       afficher cette aide\n"
+              << "  quit | q              quitter\n"
+              << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
+              << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
+              << "  'sauvegarder' et 'aide' restent disponibles.\n\n";
+}
+
 void saveCommand(const GoGame& game, const std::string& arg) {
     std::string path = arg.empty() ? "partie.go" : arg;
     if (game.saveToFile(path)) std::cout << "Partie sauvegardee dans " << path << ".\n";
@@ -84,9 +98,7 @@ int main(int argc, char** argv) {
         if (size < 0) return 0;
         game = GoGame(size);
     }
-    std::cout << "Commandes : D4 (colonne+ligne) ou \"ligne colonne\", 'pass' pour passer, 'annuler' pour annuler le dernier coup,\n"
-              << "'sauvegarder [fichier]' / 'charger [fichier]' (defaut : partie.go), 'quit' pour quitter.\n"
-              << "Deux passes consecutives terminent la partie.\n";
+    std::cout << "Tapez 'aide' pour voir les commandes.\n";
 
     bool finished = false;
     while (!finished) {
@@ -103,6 +115,10 @@ int main(int argc, char** argv) {
         if (cmd == "quit" || cmd == "q") return 0;
         std::string arg;
         std::string word = splitCommand(line, arg);
+        if (word == "aide" || word == "help" || word == "?" || word == "h") {
+            printHelp();
+            continue;
+        }
         if (word == "sauvegarder" || word == "save") {
             saveCommand(game, arg);
             continue;
@@ -158,6 +174,10 @@ int main(int argc, char** argv) {
             if (cmd == "ok" || cmd == "done") break;
             std::string arg;
             std::string word = splitCommand(line, arg);
+            if (word == "aide" || word == "help" || word == "?" || word == "h") {
+                printHelp();
+                continue;
+            }
             if (word == "sauvegarder" || word == "save") {
                 saveCommand(game, arg);
                 continue;
