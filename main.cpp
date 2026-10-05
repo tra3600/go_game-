@@ -1,6 +1,7 @@
 #include <cctype>
 #include <chrono>
 #include <cstdio>
+#include <ctime>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -15,6 +16,7 @@ struct GameClock {
     using Clock = std::chrono::steady_clock;
     Clock::time_point start = Clock::now();
     Clock::time_point lastTick = start;
+    std::time_t startWall = std::time(nullptr);  // calendar time, for display only
     double used[2] = {0, 0};  // seconds spent by Black, White
 
     static int index(char player) { return player == GoGame::BLACK ? 0 : 1; }
@@ -123,6 +125,20 @@ void nameCommand(const std::string& arg) {
     std::cout << (idx == 0 ? "Noir" : "Blanc") << " (" << (idx == 0 ? 'B' : 'W') << ") s'appelle maintenant " << name << ".\n";
 }
 
+std::string formatDate(std::time_t t) {
+    static const char* const DAYS[] = {"dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"};
+    std::tm tmv = *std::localtime(&t);
+    char buf[48];
+    std::snprintf(buf, sizeof buf, "%s %02d/%02d/%04d a %02d:%02d", DAYS[tmv.tm_wday], tmv.tm_mday,
+                  tmv.tm_mon + 1, tmv.tm_year + 1900, tmv.tm_hour, tmv.tm_min);
+    return buf;
+}
+
+void printDate() {
+    std::cout << "Date et heure : " << formatDate(std::time(nullptr)) << "\n"
+              << "Partie commencee : " << formatDate(gameClock.startWall) << "\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -140,6 +156,7 @@ const Shortcut SHORTCUTS[] = {
     {"hi", "historique"},  {"pi", "pierres"},      {"sv", "sauvegarder"}, {"ch", "charger"},
     {"ta", "taille"},      {"ai", "aide"},        {"ve", "version"},
     {"cr", "credits"},
+    {"da", "date"},
     {"jo", "joueurs"},   {"no", "nom"},
     {"tp", "temps"},
 };
@@ -360,11 +377,12 @@ void printHelp() {
               << "  temps | time          afficher le temps de jeu (total et par joueur)\n"
               << "  joueurs               afficher le nom des joueurs\n"
               << "  nom noir|blanc <nom>  changer le nom d'un joueur\n"
+              << "  date                  afficher la date et l'heure (et le debut de la partie)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -476,6 +494,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nom" || word == "name") {
             nameCommand(arg);
+            continue;
+        }
+        if (word == "date") {
+            printDate();
             continue;
         }
         if (word == "score") {
@@ -610,6 +632,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nom" || word == "name") {
                 nameCommand(arg);
+                continue;
+            }
+            if (word == "date") {
+                printDate();
                 continue;
             }
             if (word == "score") {
