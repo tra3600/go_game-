@@ -60,6 +60,8 @@ int main() {
     std::cout << "Commandes : D4 (colonne+ligne) ou \"ligne colonne\", 'pass' pour passer, 'quit' pour quitter.\n"
               << "Deux passes consecutives terminent la partie.\n";
 
+    bool finished = false;
+    while (!finished) {
     while (!game.isOver()) {
         game.printBoard();
         std::cout << "Joueur " << player << " (" << (player == GoGame::BLACK ? "Noir" : "Blanc") << ") > ";
@@ -90,9 +92,11 @@ int main() {
         player = GoGame::opponent(player);
     }
 
+    bool resumed = false;
     if (game.isOver()) {
         std::cout << "\nMarquage des pierres mortes : entrez une pierre (ex: D4) pour marquer/demarquer\n"
-                  << "son groupe (affiche en minuscule), puis 'ok' pour valider le score.\n";
+                  << "son groupe (affiche en minuscule), 'ok' pour valider le score,\n"
+                  << "'reprendre' pour continuer la partie (desaccord).\n";
         while (true) {
             game.printBoard();
             std::cout << "Mort > ";
@@ -103,10 +107,18 @@ int main() {
             while (!cmd.empty() && std::isspace(static_cast<unsigned char>(cmd.back()))) cmd.pop_back();
             if (cmd == "ok" || cmd == "done") break;
             if (cmd == "quit" || cmd == "q") return 0;
+            if (cmd == "reprendre" || cmd == "resume") {
+                game.resume();
+                resumed = true;
+                std::cout << "La partie reprend. Joueur " << player << " a la main.\n";
+                break;
+            }
             int row, col;
             if (!parseMove(line, size, row, col) || !game.toggleDead(row, col))
                 std::cout << "Choisissez une pierre presente sur le plateau.\n";
         }
+    }
+    finished = !resumed;
     }
 
     game.printBoard();

@@ -121,6 +121,11 @@ int GoGame::deadCount() const {
     return n;
 }
 
+void GoGame::resume() {
+    consecutivePasses = 0;
+    for (auto& row : dead) row.assign(size, false);
+}
+
 void GoGame::computeScore(double& blackScore, double& whiteScore) const {
     int black = 0, white = 0;
     std::vector<std::vector<bool>> seen(size, std::vector<bool>(size, false));

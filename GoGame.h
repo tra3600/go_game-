@@ -31,6 +31,8 @@ public:
     // Dead-stone marking (after both players passed): toggles the whole group at (row,col).
     bool toggleDead(int row, int col);
     int deadCount() const;
+    // Cancels the end of the game: clears dead marks and the pass counter.
+    void resume();
 
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
