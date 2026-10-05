@@ -50,13 +50,19 @@ int readBoardSize() {
     }
 }
 
+const char* const GAME_VERSION = "1.0.0";
+
+void printVersion() {
+    std::cout << "Jeu de Go (C++) version " << GAME_VERSION << " - format de sauvegarde 1\n";
+}
+
 // Two-letter shortcuts (never valid coordinates, so they cannot clash with "D4"-style moves).
 struct Shortcut { const char* alias; const char* command; };
 const Shortcut SHORTCUTS[] = {
     {"sc", "score"},       {"st", "stats"},        {"de", "dernier"},   {"mo", "montrer"},
     {"ca", "captures"},    {"te", "territoire"},   {"li", "libertes"},  {"re", "regles"},
     {"hi", "historique"},  {"pi", "pierres"},      {"sv", "sauvegarder"}, {"ch", "charger"},
-    {"ta", "taille"},      {"ai", "aide"},
+    {"ta", "taille"},      {"ai", "aide"},        {"ve", "version"},
 };
 
 // Splits "commande argument" : returns the lowercase command (shortcuts expanded),
@@ -269,11 +275,12 @@ void printHelp() {
               << "  territoire            afficher le plateau avec les territoires (+ Noir, - Blanc)\n"
               << "  regles | rules        afficher les regles du jeu\n"
               << "  raccourcis            afficher les raccourcis clavier\n"
+              << "  version | ver         afficher la version du jeu (aussi : ./go_game --version)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -287,6 +294,10 @@ int main(int argc, char** argv) {
     int size = 0;
     char player = GoGame::BLACK;
     GoGame game(5);
+    if (argc > 1 && (std::string(argv[1]) == "--version" || std::string(argv[1]) == "-v")) {
+        printVersion();
+        return 0;
+    }
     if (argc > 1) {
         std::string err;
         if (!game.loadFromFile(argv[1], player, err)) {
@@ -359,6 +370,10 @@ int main(int argc, char** argv) {
         }
         if (word == "raccourcis" || word == "shortcuts") {
             printShortcuts();
+            continue;
+        }
+        if (word == "version" || word == "ver") {
+            printVersion();
             continue;
         }
         if (word == "score") {
@@ -470,6 +485,10 @@ int main(int argc, char** argv) {
             }
             if (word == "raccourcis" || word == "shortcuts") {
                 printShortcuts();
+                continue;
+            }
+            if (word == "version" || word == "ver") {
+                printVersion();
                 continue;
             }
             if (word == "score") {
