@@ -139,6 +139,14 @@ void printDate() {
               << "Partie commencee : " << formatDate(gameClock.startWall) << "\n";
 }
 
+void printTime() {
+    std::time_t t = std::time(nullptr);
+    std::tm tmv = *std::localtime(&t);
+    char buf[16];
+    std::snprintf(buf, sizeof buf, "%02d:%02d:%02d", tmv.tm_hour, tmv.tm_min, tmv.tm_sec);
+    std::cout << "Il est " << buf << ".\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -157,6 +165,7 @@ const Shortcut SHORTCUTS[] = {
     {"ta", "taille"},      {"ai", "aide"},        {"ve", "version"},
     {"cr", "credits"},
     {"da", "date"},
+    {"he", "heure"},
     {"jo", "joueurs"},   {"no", "nom"},
     {"tp", "temps"},
 };
@@ -378,11 +387,12 @@ void printHelp() {
               << "  joueurs               afficher le nom des joueurs\n"
               << "  nom noir|blanc <nom>  changer le nom d'un joueur\n"
               << "  date                  afficher la date et l'heure (et le debut de la partie)\n"
+              << "  heure                 afficher l'heure actuelle\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -498,6 +508,10 @@ int main(int argc, char** argv) {
         }
         if (word == "date") {
             printDate();
+            continue;
+        }
+        if (word == "heure") {
+            printTime();
             continue;
         }
         if (word == "score") {
@@ -636,6 +650,10 @@ int main(int argc, char** argv) {
             }
             if (word == "date") {
                 printDate();
+                continue;
+            }
+            if (word == "heure") {
+                printTime();
                 continue;
             }
             if (word == "score") {

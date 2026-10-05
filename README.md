@@ -40,5 +40,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `temps` (ou `tp`) : affiche le temps de jeu (duree totale et temps de reflexion de chaque joueur)
 - `joueurs` (ou `jo`) : affiche le nom des joueurs ; `nom noir <nom>` / `nom blanc <nom>` les change (non sauvegarde dans le fichier de partie)
 - `date` (ou `da`) : affiche la date et l'heure, et le moment ou la partie a commence
+- `heure` (ou `he`) : affiche l'heure actuelle (HH:MM:SS)
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
