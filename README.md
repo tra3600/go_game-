@@ -62,5 +62,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `nbbord` (ou `bo`) : nombre de pierres sur le bord du plateau (premiere ligne), dont celles dans un coin
 - `nbcentre` (ou `ce`) : nombre de pierres au centre du plateau (zone centrale, point central inclus)
 - `nbcoins` (ou `cs`) : nombre de pierres dans les 4 coins du plateau, avec leurs coordonnees
+- `nbcotes` (ou `ct`) : nombre de pierres sur les cotes du plateau (bords sans les coins), detaille par cote
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

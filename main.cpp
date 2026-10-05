@@ -403,6 +403,29 @@ void printCornerStones(const GoGame& game) {
     std::cout << "Pierres dans les coins : " << total << " (sur 4 coins, " << free << " libre(s))\n" << lines;
 }
 
+void printSideStones(const GoGame& game) {
+    int n = game.getSize();
+    const char* names[4] = {"haut", "bas", "gauche", "droite"};
+    int total = 0;
+    std::string lines;
+    for (char p : {GoGame::BLACK, GoGame::WHITE}) {
+        int perSide[4] = {0, 0, 0, 0};
+        for (int i = 1; i <= n - 2; ++i) {  // corners excluded
+            perSide[0] += game.stoneAt(0, i) == p;
+            perSide[1] += game.stoneAt(n - 1, i) == p;
+            perSide[2] += game.stoneAt(i, 0) == p;
+            perSide[3] += game.stoneAt(i, n - 1) == p;
+        }
+        int sum = perSide[0] + perSide[1] + perSide[2] + perSide[3];
+        total += sum;
+        lines += "  " + nameOf(p) + " (" + p + ") : " + std::to_string(sum) + " pierre(s) sur les cotes (";
+        for (int s = 0; s < 4; ++s) lines += std::string(s ? ", " : "") + names[s] + " " + std::to_string(perSide[s]);
+        lines += ")\n";
+    }
+    std::cout << "Pierres sur les cotes : " << total << "\n" << lines
+              << "(Cotes = bords du plateau sans les coins ; voir `nbcoins` pour les coins.)\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -422,6 +445,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"ct", "nbcotes"},
     {"cs", "nbcoins"},
     {"ce", "nbcentre"},
     {"bo", "nbbord"},
@@ -687,11 +711,12 @@ void printHelp() {
               << "  nbbord                afficher le nombre de pierres sur le bord du plateau\n"
               << "  nbcentre              afficher le nombre de pierres au centre du plateau\n"
               << "  nbcoins               afficher le nombre de pierres dans les coins\n"
+              << "  nbcotes               afficher le nombre de pierres sur les cotes (bords sans les coins)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbcoins', 'nbcentre', 'nbbord', 'nbconnectees', 'nbisolees', 'nbsecurite', 'nbdanger', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbcotes', 'nbcoins', 'nbcentre', 'nbbord', 'nbconnectees', 'nbisolees', 'nbsecurite', 'nbdanger', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -895,6 +920,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbcoins") {
             printCornerStones(game);
+            continue;
+        }
+        if (word == "nbcotes") {
+            printSideStones(game);
             continue;
         }
         if (word == "score") {
@@ -1121,6 +1150,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbcoins") {
                 printCornerStones(game);
+                continue;
+            }
+            if (word == "nbcotes") {
+                printSideStones(game);
                 continue;
             }
             if (word == "score") {
