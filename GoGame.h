@@ -60,6 +60,7 @@ public:
 
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
+    void printTerritory() const;
     void computeScore(double& blackScore, double& whiteScore) const;
 
     double getKomi() const { return komi; }
@@ -89,6 +90,7 @@ private:
     int capturedByWhite = 0;
 
     using Group = std::vector<std::pair<int, int>>;
+    std::vector<std::vector<char>> territoryMap() const;
     std::string coordName(int row, int col) const;
     bool inBoard(int r, int c) const { return r >= 0 && r < size && c >= 0 && c < size; }
     // Collects the group containing (r,c) and returns its number of liberties.

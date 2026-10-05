@@ -228,11 +228,12 @@ void printHelp() {
               << "  libertes <coord>      afficher les libertes du groupe contenant la pierre (ex: libertes D4)\n"
               << "  stats | statistiques  afficher les statistiques de la partie\n"
               << "  pierres [noir|blanc]  lister les coordonnees des pierres sur le plateau\n"
+              << "  territoire            afficher le plateau avec les territoires (+ Noir, - Blanc)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -306,6 +307,10 @@ int main(int argc, char** argv) {
         }
         if (word == "pierres" || word == "stones") {
             printStones(game, arg);
+            continue;
+        }
+        if (word == "territoire" || word == "territory") {
+            game.printTerritory();
             continue;
         }
         if (word == "score") {
@@ -405,6 +410,10 @@ int main(int argc, char** argv) {
             }
             if (word == "pierres" || word == "stones") {
                 printStones(game, arg);
+                continue;
+            }
+            if (word == "territoire" || word == "territory") {
+                game.printTerritory();
                 continue;
             }
             if (word == "score") {

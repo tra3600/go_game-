@@ -156,25 +156,22 @@ void GoGame::resume() {
     for (auto& row : dead) row.assign(size, false);
 }
 
-void GoGame::computeScore(double& blackScore, double& whiteScore) const {
-    int black = 0, white = 0;
+// For every empty (or dead-marked) cell: BLACK/WHITE if its region is bordered by live stones of
+// that colour only, EMPTY if neutral. Live stones are marked ' '.
+std::vector<std::vector<char>> GoGame::territoryMap() const {
+    std::vector<std::vector<char>> owner(size, std::vector<char>(size, ' '));
     std::vector<std::vector<bool>> seen(size, std::vector<bool>(size, false));
     for (int r = 0; r < size; ++r) {
         for (int c = 0; c < size; ++c) {
-            if (board[r][c] != EMPTY && !dead[r][c]) {
-                (board[r][c] == BLACK ? black : white) += 1;
-                continue;
-            }
-            if (seen[r][c]) continue;
+            if ((board[r][c] != EMPTY && !dead[r][c]) || seen[r][c]) continue;
             // Flood an empty region and see which colours border it.
-            int area = 0;
+            std::vector<std::pair<int, int>> region, stack{{r, c}};
             bool touchesB = false, touchesW = false;
-            std::vector<std::pair<int, int>> stack{{r, c}};
             seen[r][c] = true;
             while (!stack.empty()) {
                 auto [cr, cc] = stack.back();
                 stack.pop_back();
-                ++area;
+                region.push_back({cr, cc});
                 for (int d = 0; d < 4; ++d) {
                     int nr = cr + DR[d], nc = cc + DC[d];
                     if (!inBoard(nr, nc)) continue;
@@ -184,12 +181,51 @@ void GoGame::computeScore(double& blackScore, double& whiteScore) const {
                     else if (!seen[nr][nc]) { seen[nr][nc] = true; stack.push_back({nr, nc}); }
                 }
             }
-            if (touchesB && !touchesW) black += area;
-            else if (touchesW && !touchesB) white += area;
+            char who = (touchesB && !touchesW) ? BLACK : (touchesW && !touchesB) ? WHITE : EMPTY;
+            for (auto& [rr, rc] : region) owner[rr][rc] = who;
+        }
+    }
+    return owner;
+}
+
+void GoGame::computeScore(double& blackScore, double& whiteScore) const {
+    int black = 0, white = 0;
+    auto owner = territoryMap();
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (owner[r][c] == ' ') (board[r][c] == BLACK ? black : white) += 1;
+            else if (owner[r][c] == BLACK) ++black;
+            else if (owner[r][c] == WHITE) ++white;
         }
     }
     blackScore = black;
     whiteScore = white + komi;
+}
+
+// Board with territory shown as '+' (Black) and '-' (White); neutral points stay '.'.
+void GoGame::printTerritory() const {
+    auto owner = territoryMap();
+    std::cout << "\n   ";
+    for (int c = 0; c < size; ++c) std::cout << COLUMNS[c] << ' ';
+    std::cout << '\n';
+    int tb = 0, tw = 0;
+    for (int r = 0; r < size; ++r) {
+        int label = size - r;
+        if (label < 10) std::cout << ' ';
+        std::cout << label << ' ';
+        for (int c = 0; c < size; ++c) {
+            char ch;
+            if (owner[r][c] == ' ') ch = board[r][c];
+            else if (owner[r][c] == BLACK) { ch = '+'; ++tb; }
+            else if (owner[r][c] == WHITE) { ch = '-'; ++tw; }
+            else ch = '.';
+            std::cout << ch << ' ';
+        }
+        std::cout << label << '\n';
+    }
+    std::cout << "   ";
+    for (int c = 0; c < size; ++c) std::cout << COLUMNS[c] << ' ';
+    std::cout << "\nTerritoire - Noir (+) : " << tb << " | Blanc (-) : " << tw << "\n\n";
 }
 
 std::string GoGame::describe(MoveResult r) {
