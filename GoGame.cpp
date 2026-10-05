@@ -421,6 +421,16 @@ void GoGame::edgeStats(char player, int& onEdge, int& inCorner) const {
     }
 }
 
+void GoGame::centerStats(char player, int& inCenter, bool& onTengen) const {
+    inCenter = 0;
+    onTengen = false;
+    int lo = centerMargin(), hi = size - 1 - centerMargin();
+    for (int r = lo; r <= hi; ++r)
+        for (int c = lo; c <= hi; ++c)
+            if (board[r][c] == player) ++inCenter;
+    onTengen = (size % 2 == 1) && board[size / 2][size / 2] == player;
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);

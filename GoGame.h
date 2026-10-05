@@ -74,6 +74,10 @@ public:
     std::vector<std::string> isolatedStones(char player) const;
     // Stones of `player` on the outer ring of the board (corners included) and on the 4 corners.
     void edgeStats(char player, int& onEdge, int& inCorner) const;
+    // Central zone = points at least size/3 lines away from every edge (e.g. 3x3 on 5x5, 7x7 on 19x19).
+    int centerMargin() const { return size / 3; }
+    // Stones of `player` in the central zone, and whether it holds the exact centre point (tengen).
+    void centerStats(char player, int& inCenter, bool& onTengen) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board
