@@ -266,6 +266,33 @@ void GoGame::libertyStats(char player, int& groups, int& totalLiberties, int& we
     }
 }
 
+void GoGame::territoryStats(char player, int& regions, int& points) const {
+    regions = 0;
+    points = 0;
+    auto owner = territoryMap();
+    std::vector<std::vector<bool>> seen(size, std::vector<bool>(size, false));
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (owner[r][c] != player || seen[r][c]) continue;
+            ++regions;
+            std::vector<std::pair<int, int>> stack{{r, c}};
+            seen[r][c] = true;
+            while (!stack.empty()) {
+                auto [cr, cc] = stack.back();
+                stack.pop_back();
+                ++points;
+                for (int d = 0; d < 4; ++d) {
+                    int nr = cr + DR[d], nc = cc + DC[d];
+                    if (inBoard(nr, nc) && owner[nr][nc] == player && !seen[nr][nc]) {
+                        seen[nr][nc] = true;
+                        stack.push_back({nr, nc});
+                    }
+                }
+            }
+        }
+    }
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);

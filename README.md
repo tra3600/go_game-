@@ -46,5 +46,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `coups` (ou `co`) : affiche le nombre de coups joues (total et par joueur, pierres posees et passes)
 - `nbpierres` (ou `np`) : affiche le nombre de pierres sur le plateau (par couleur) et les intersections libres
 - `libertestotal` (ou `lt`) : nombre total de libertes de chaque joueur, nombre de groupes et groupe le plus faible
+- `nbterritoires` (ou `nt`) : nombre de territoires distincts de chaque joueur et points qu'ils couvrent
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
