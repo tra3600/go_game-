@@ -43,6 +43,9 @@ public:
     // On failure the game is left untouched and `error` explains why.
     bool loadFromFile(const std::string& path, char& player, std::string& error);
 
+    // One entry per move, e.g. "B D4" or "W pass" (columns A-T without I, row 1 at the bottom).
+    std::vector<std::string> moveList() const;
+
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
     void computeScore(double& blackScore, double& whiteScore) const;

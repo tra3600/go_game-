@@ -68,6 +68,18 @@ void printScore(const GoGame& game) {
               << "(Estimation : les pierres non marquees mortes comptent comme vivantes.)\n";
 }
 
+void printHistory(const GoGame& game) {
+    auto list = game.moveList();
+    if (list.empty()) {
+        std::cout << "Aucun coup joue.\n";
+        return;
+    }
+    std::cout << "Historique (" << list.size() << " coups) :\n";
+    for (size_t i = 0; i < list.size(); ++i) {
+        std::cout << "  " << i + 1 << ". " << list[i] << "\n";
+    }
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -76,11 +88,12 @@ void printHelp() {
               << "  sauvegarder [fichier] sauvegarder la partie (defaut : partie.go)\n"
               << "  charger [fichier]     charger une partie sauvegardee\n"
               << "  score                 afficher le score en cours (estimation)\n"
+              << "  historique | histo    afficher la liste des coups joues\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'historique', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -124,6 +137,10 @@ int main(int argc, char** argv) {
         if (cmd == "quit" || cmd == "q") return 0;
         std::string arg;
         std::string word = splitCommand(line, arg);
+        if (word == "historique" || word == "histo" || word == "history") {
+            printHistory(game);
+            continue;
+        }
         if (word == "score") {
             printScore(game);
             continue;
@@ -187,6 +204,10 @@ int main(int argc, char** argv) {
             if (cmd == "ok" || cmd == "done") break;
             std::string arg;
             std::string word = splitCommand(line, arg);
+            if (word == "historique" || word == "histo" || word == "history") {
+                printHistory(game);
+                continue;
+            }
             if (word == "score") {
                 printScore(game);
                 continue;

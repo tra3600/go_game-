@@ -199,6 +199,18 @@ std::string GoGame::describe(MoveResult r) {
     return "";
 }
 
+std::vector<std::string> GoGame::moveList() const {
+    std::vector<std::string> list;
+    for (const Move& m : moves) {
+        std::string s(1, m.player);
+        s += ' ';
+        if (m.isPass) s += "pass";
+        else s += std::string(1, COLUMNS[m.col]) + std::to_string(size - m.row);
+        list.push_back(s);
+    }
+    return list;
+}
+
 bool GoGame::saveToFile(const std::string& path) const {
     std::ofstream out(path);
     if (!out) return false;
