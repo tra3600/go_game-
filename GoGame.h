@@ -89,6 +89,8 @@ public:
 
     double getKomi() const { return komi; }
     void setKomi(double k) { komi = k; }
+    char stoneAt(int row, int col) const { return inBoard(row, col) ? board[row][col] : EMPTY; }
+    std::string pointName(int row, int col) const { return coordName(row, col); }
     int getSize() const { return size; }
     static char opponent(char player) { return player == BLACK ? WHITE : BLACK; }
     static std::string describe(MoveResult r);

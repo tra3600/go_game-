@@ -382,6 +382,27 @@ void printCenterStones(const GoGame& game) {
               << n - (n - 1 - m) << "-" << n - m << ".)\n";
 }
 
+void printCornerStones(const GoGame& game) {
+    int n = game.getSize();
+    const int corners[4][2] = {{0, 0}, {0, n - 1}, {n - 1, 0}, {n - 1, n - 1}};
+    int total = 0;
+    std::string lines;
+    for (char p : {GoGame::BLACK, GoGame::WHITE}) {
+        std::string where;
+        int count = 0;
+        for (const auto& c : corners) {
+            if (game.stoneAt(c[0], c[1]) != p) continue;
+            where += (count ? ", " : " : ") + game.pointName(c[0], c[1]);
+            ++count;
+        }
+        total += count;
+        lines += "  " + nameOf(p) + " (" + p + ") : " + std::to_string(count) + " pierre(s) dans les coins" + where + "\n";
+    }
+    int free = 0;
+    for (const auto& c : corners) free += (game.stoneAt(c[0], c[1]) == GoGame::EMPTY);
+    std::cout << "Pierres dans les coins : " << total << " (sur 4 coins, " << free << " libre(s))\n" << lines;
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -401,6 +422,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"cs", "nbcoins"},
     {"ce", "nbcentre"},
     {"bo", "nbbord"},
     {"cn", "nbconnectees"},
@@ -664,11 +686,12 @@ void printHelp() {
               << "  nbconnectees          afficher le nombre de pierres connectees\n"
               << "  nbbord                afficher le nombre de pierres sur le bord du plateau\n"
               << "  nbcentre              afficher le nombre de pierres au centre du plateau\n"
+              << "  nbcoins               afficher le nombre de pierres dans les coins\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbcentre', 'nbbord', 'nbconnectees', 'nbisolees', 'nbsecurite', 'nbdanger', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbcoins', 'nbcentre', 'nbbord', 'nbconnectees', 'nbisolees', 'nbsecurite', 'nbdanger', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -868,6 +891,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbcentre") {
             printCenterStones(game);
+            continue;
+        }
+        if (word == "nbcoins") {
+            printCornerStones(game);
             continue;
         }
         if (word == "score") {
@@ -1090,6 +1117,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbcentre") {
                 printCenterStones(game);
+                continue;
+            }
+            if (word == "nbcoins") {
+                printCornerStones(game);
                 continue;
             }
             if (word == "score") {
