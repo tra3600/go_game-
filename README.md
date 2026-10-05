@@ -36,5 +36,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `regles` (ou `rules`) : affiche les regles du jeu telles qu'implementees
 - `raccourcis` : affiche les raccourcis (`p`, `u`, `q`, `h` et abreviations a deux lettres comme `sc` = score, `st` = stats)
 - `version` (ou `ve`) : affiche la version du jeu ; `./go_game --version` fait de meme sans lancer la partie
+- `credits` (ou `cr`) : affiche les credits et la licence (LGPL 2.1)
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

@@ -56,6 +56,15 @@ void printVersion() {
     std::cout << "Jeu de Go (C++) version " << GAME_VERSION << " - format de sauvegarde 1\n";
 }
 
+void printCredits() {
+    std::cout << "\nCredits\n"
+              << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
+              << "  Projet : tra3600/go_game- (https://github.com/tra3600/go_game-)\n"
+              << "  Ameliorations (captures, ko, marquage des pierres mortes, commandes...) : Claude Code\n"
+              << "  Licence : GNU LGPL 2.1 (voir le fichier LICENSE)\n"
+              << "  Le jeu de Go est un jeu traditionnel d'origine asiatique, vieux de plus de 2500 ans.\n\n";
+}
+
 // Two-letter shortcuts (never valid coordinates, so they cannot clash with "D4"-style moves).
 struct Shortcut { const char* alias; const char* command; };
 const Shortcut SHORTCUTS[] = {
@@ -63,6 +72,7 @@ const Shortcut SHORTCUTS[] = {
     {"ca", "captures"},    {"te", "territoire"},   {"li", "libertes"},  {"re", "regles"},
     {"hi", "historique"},  {"pi", "pierres"},      {"sv", "sauvegarder"}, {"ch", "charger"},
     {"ta", "taille"},      {"ai", "aide"},        {"ve", "version"},
+    {"cr", "credits"},
 };
 
 // Splits "commande argument" : returns the lowercase command (shortcuts expanded),
@@ -276,11 +286,12 @@ void printHelp() {
               << "  regles | rules        afficher les regles du jeu\n"
               << "  raccourcis            afficher les raccourcis clavier\n"
               << "  version | ver         afficher la version du jeu (aussi : ./go_game --version)\n"
+              << "  credits               afficher les credits du jeu\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -374,6 +385,10 @@ int main(int argc, char** argv) {
         }
         if (word == "version" || word == "ver") {
             printVersion();
+            continue;
+        }
+        if (word == "credits") {
+            printCredits();
             continue;
         }
         if (word == "score") {
@@ -489,6 +504,10 @@ int main(int argc, char** argv) {
             }
             if (word == "version" || word == "ver") {
                 printVersion();
+                continue;
+            }
+            if (word == "credits") {
+                printCredits();
                 continue;
             }
             if (word == "score") {
