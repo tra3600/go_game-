@@ -87,28 +87,63 @@ std::string GoGame::serialize(const std::vector<std::vector<char>>& b) const {
     return s;
 }
 
-MoveResult GoGame::placeStone(int row, int col, char player) {
+// Checks a move without playing it; on Ok, `next` is the resulting board and `removed` the captures.
+MoveResult GoGame::evaluateMove(int row, int col, char player, std::vector<std::vector<char>>& next,
+                                int& removed) const {
     if (isOver()) return MoveResult::GameOver;
     if (!inBoard(row, col)) return MoveResult::OutOfBoard;
     if (board[row][col] != EMPTY) return MoveResult::Occupied;
 
-    auto next = board;
+    next = board;
     next[row][col] = player;
-    int removed = removeDeadNeighbours(next, row, col, opponent(player));
+    removed = removeDeadNeighbours(next, row, col, opponent(player));
 
     Group own;
     if (collectGroup(next, row, col, own) == 0) return MoveResult::Suicide;
+    if (history.count(serialize(next))) return MoveResult::Ko;
+    return MoveResult::Ok;
+}
 
-    std::string key = serialize(next);
-    if (history.count(key)) return MoveResult::Ko;
+MoveResult GoGame::placeStone(int row, int col, char player) {
+    std::vector<std::vector<char>> next;
+    int removed = 0;
+    MoveResult result = evaluateMove(row, col, player, next, removed);
+    if (result != MoveResult::Ok) return result;
 
     saveSnapshot(player);
     moves.push_back({player, false, row, col});
     board = std::move(next);
-    history.insert(key);
+    history.insert(serialize(board));
     (player == BLACK ? capturedByBlack : capturedByWhite) += removed;
     consecutivePasses = 0;
     return MoveResult::Ok;
+}
+
+void GoGame::capturable(char player, int& groups, int& stones) const {
+    groups = 0;
+    stones = 0;
+    std::vector<std::vector<bool>> counted(size, std::vector<bool>(size, false));
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (board[r][c] != player || counted[r][c]) continue;
+            Group g;
+            int libs = collectGroup(board, r, c, g);
+            for (auto& [gr, gc] : g) counted[gr][gc] = true;
+            if (libs != 1) continue;
+            int lr = -1, lc = -1;
+            for (auto& [gr, gc] : g)
+                for (int d = 0; d < 4; ++d) {
+                    int nr = gr + DR[d], nc = gc + DC[d];
+                    if (inBoard(nr, nc) && board[nr][nc] == EMPTY) { lr = nr; lc = nc; }
+                }
+            std::vector<std::vector<char>> next;
+            int removed = 0;
+            if (evaluateMove(lr, lc, opponent(player), next, removed) == MoveResult::Ok) {
+                ++groups;
+                stones += static_cast<int>(g.size());
+            }
+        }
+    }
 }
 
 void GoGame::pass(char player) {

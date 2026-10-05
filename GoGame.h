@@ -66,6 +66,8 @@ public:
     int neutralPoints() const;
     // Groups of `player` with exactly one liberty (in atari), each as its list of stone coordinates.
     std::vector<std::vector<std::string>> atariGroups(char player) const;
+    // Groups/stones of `player` that the opponent can legally capture with his next move.
+    void capturable(char player, int& groups, int& stones) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board
@@ -103,6 +105,7 @@ private:
 
     using Group = std::vector<std::pair<int, int>>;
     std::vector<std::vector<char>> territoryMap() const;
+    MoveResult evaluateMove(int row, int col, char player, std::vector<std::vector<char>>& next, int& removed) const;
     std::string coordName(int row, int col) const;
     bool inBoard(int r, int c) const { return r >= 0 && r < size && c >= 0 && c < size; }
     // Collects the group containing (r,c) and returns its number of liberties.
