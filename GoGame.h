@@ -72,6 +72,8 @@ public:
     void dangerStats(char player, int& atariStones, int& twoLibertyStones) const;
     // Stones of `player` with no friendly neighbour (groups of one stone), as coordinates.
     std::vector<std::string> isolatedStones(char player) const;
+    // Stones of `player` on the outer ring of the board (corners included) and on the 4 corners.
+    void edgeStats(char player, int& onEdge, int& inCorner) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board

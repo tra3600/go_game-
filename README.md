@@ -59,5 +59,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `nbsecurite` (ou `se`) : nombre de pierres en securite (groupes a 3 libertes ou plus, estimation)
 - `nbisolees` (ou `is`) : nombre de pierres isolees (sans pierre alliee adjacente), avec leurs coordonnees
 - `nbconnectees` (ou `cn`) : nombre de pierres connectees (avec au moins une pierre alliee adjacente) et de groupes correspondants
+- `nbbord` (ou `bo`) : nombre de pierres sur le bord du plateau (premiere ligne), dont celles dans un coin
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter

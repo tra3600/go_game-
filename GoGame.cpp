@@ -408,6 +408,19 @@ std::vector<std::string> GoGame::isolatedStones(char player) const {
     return list;
 }
 
+void GoGame::edgeStats(char player, int& onEdge, int& inCorner) const {
+    onEdge = 0;
+    inCorner = 0;
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (board[r][c] != player) continue;
+            bool rowEdge = (r == 0 || r == size - 1), colEdge = (c == 0 || c == size - 1);
+            if (rowEdge || colEdge) ++onEdge;
+            if (rowEdge && colEdge) ++inCorner;
+        }
+    }
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);
