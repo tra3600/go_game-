@@ -48,6 +48,10 @@ public:
     std::vector<std::string> moveList() const;
     bool hasLastStone() const { return !moves.empty() && !moves.back().isPass; }
 
+    // Group containing the stone at (row,col): its stones and liberties as coordinates ("D4").
+    // False if there is no stone there.
+    bool groupInfo(int row, int col, std::vector<std::string>& stones, std::vector<std::string>& liberties) const;
+
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
     void computeScore(double& blackScore, double& whiteScore) const;
@@ -79,6 +83,7 @@ private:
     int capturedByWhite = 0;
 
     using Group = std::vector<std::pair<int, int>>;
+    std::string coordName(int row, int col) const;
     bool inBoard(int r, int c) const { return r >= 0 && r < size && c >= 0 && c < size; }
     // Collects the group containing (r,c) and returns its number of liberties.
     int collectGroup(const std::vector<std::vector<char>>& b, int r, int c, Group& group) const;

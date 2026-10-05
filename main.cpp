@@ -151,6 +151,27 @@ void printCaptures(const GoGame& game) {
               << "  Blanc (W) a capture " << w << " pierre" << (w > 1 ? "s" : "") << " noire" << (w > 1 ? "s" : "") << "\n";
 }
 
+void libertiesCommand(const GoGame& game, const std::string& arg) {
+    int row, col;
+    if (arg.empty() || !parseMove(arg, game.getSize(), row, col)) {
+        std::cout << "Usage : libertes D4 (coordonnee d'une pierre du groupe).\n";
+        return;
+    }
+    std::vector<std::string> stones, libs;
+    if (!game.groupInfo(row, col, stones, libs)) {
+        std::cout << "Aucune pierre a cette intersection.\n";
+        return;
+    }
+    auto join = [](const std::vector<std::string>& v) {
+        std::string s;
+        for (const auto& x : v) s += (s.empty() ? "" : " ") + x;
+        return s;
+    };
+    std::cout << "Groupe de " << stones.size() << " pierre" << (stones.size() > 1 ? "s" : "") << " : " << join(stones) << "\n"
+              << libs.size() << " liberte" << (libs.size() > 1 ? "s" : "") << " : " << join(libs)
+              << (libs.size() == 1 ? "  (atari !)" : "") << "\n";
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -165,11 +186,12 @@ void printHelp() {
               << "  montrer | show        afficher le plateau avec le dernier coup entre parentheses\n"
               << "  taille [n]            nouvelle partie sur un plateau n x n (5 a 19, komi conserve)\n"
               << "  captures | prisonniers afficher les pierres capturees par chaque joueur\n"
+              << "  libertes <coord>      afficher les libertes du groupe contenant la pierre (ex: libertes D4)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -231,6 +253,10 @@ int main(int argc, char** argv) {
         }
         if (word == "captures" || word == "prisonniers") {
             printCaptures(game);
+            continue;
+        }
+        if (word == "libertes" || word == "liberties") {
+            libertiesCommand(game, arg);
             continue;
         }
         if (word == "score") {
@@ -318,6 +344,10 @@ int main(int argc, char** argv) {
             }
             if (word == "captures" || word == "prisonniers") {
                 printCaptures(game);
+                continue;
+            }
+            if (word == "libertes" || word == "liberties") {
+                libertiesCommand(game, arg);
                 continue;
             }
             if (word == "score") {

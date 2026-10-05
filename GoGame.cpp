@@ -204,13 +204,34 @@ std::string GoGame::describe(MoveResult r) {
     return "";
 }
 
+std::string GoGame::coordName(int row, int col) const {
+    return std::string(1, COLUMNS[col]) + std::to_string(size - row);
+}
+
+bool GoGame::groupInfo(int row, int col, std::vector<std::string>& stones,
+                       std::vector<std::string>& liberties) const {
+    if (!inBoard(row, col) || board[row][col] == EMPTY) return false;
+    Group g;
+    collectGroup(board, row, col, g);
+    std::set<std::pair<int, int>> libs;
+    for (auto& [r, c] : g) {
+        stones.push_back(coordName(r, c));
+        for (int d = 0; d < 4; ++d) {
+            int nr = r + DR[d], nc = c + DC[d];
+            if (inBoard(nr, nc) && board[nr][nc] == EMPTY) libs.insert({nr, nc});
+        }
+    }
+    for (auto& [r, c] : libs) liberties.push_back(coordName(r, c));
+    return true;
+}
+
 std::vector<std::string> GoGame::moveList() const {
     std::vector<std::string> list;
     for (const Move& m : moves) {
         std::string s(1, m.player);
         s += ' ';
         if (m.isPass) s += "pass";
-        else s += std::string(1, COLUMNS[m.col]) + std::to_string(size - m.row);
+        else s += coordName(m.row, m.col);
         list.push_back(s);
     }
     return list;
