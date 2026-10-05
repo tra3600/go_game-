@@ -147,6 +147,18 @@ void printTime() {
     std::cout << "Il est " << buf << ".\n";
 }
 
+void printTimezone() {
+    std::time_t t = std::time(nullptr);
+    std::tm tmv = *std::localtime(&t);
+    char abbr[16] = "", off[16] = "";
+    std::strftime(abbr, sizeof abbr, "%Z", &tmv);
+    std::strftime(off, sizeof off, "%z", &tmv);  // +hhmm
+    std::string o = off;
+    if (o.size() == 5) o = o.substr(0, 3) + ":" + o.substr(3);
+    std::cout << "Fuseau horaire : " << abbr << " (UTC" << o << ")"
+              << (tmv.tm_isdst > 0 ? ", heure d'ete" : "") << "\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -166,6 +178,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"fu", "fuseau"},
     {"jo", "joueurs"},   {"no", "nom"},
     {"tp", "temps"},
 };
@@ -388,11 +401,12 @@ void printHelp() {
               << "  nom noir|blanc <nom>  changer le nom d'un joueur\n"
               << "  date                  afficher la date et l'heure (et le debut de la partie)\n"
               << "  heure                 afficher l'heure actuelle\n"
+              << "  fuseau                afficher le fuseau horaire\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -512,6 +526,10 @@ int main(int argc, char** argv) {
         }
         if (word == "heure") {
             printTime();
+            continue;
+        }
+        if (word == "fuseau" || word == "timezone") {
+            printTimezone();
             continue;
         }
         if (word == "score") {
@@ -654,6 +672,10 @@ int main(int argc, char** argv) {
             }
             if (word == "heure") {
                 printTime();
+                continue;
+            }
+            if (word == "fuseau" || word == "timezone") {
+                printTimezone();
                 continue;
             }
             if (word == "score") {
