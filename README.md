@@ -42,5 +42,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `date` (ou `da`) : affiche la date et l'heure, et le moment ou la partie a commence
 - `heure` (ou `he`) : affiche l'heure actuelle (HH:MM:SS)
 - `fuseau` (ou `fu`) : affiche le fuseau horaire et le decalage UTC
+- `langue` (ou `la`) : affiche la langue du jeu (francais uniquement)
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
