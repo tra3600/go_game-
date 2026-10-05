@@ -318,7 +318,8 @@ void printCaptures(const GoGame& game) {
     int b = game.captures(GoGame::BLACK), w = game.captures(GoGame::WHITE);
     std::cout << "Pierres capturees :\n"
               << "  Noir (B) a capture " << b << " pierre" << (b > 1 ? "s" : "") << " blanche" << (b > 1 ? "s" : "") << "\n"
-              << "  Blanc (W) a capture " << w << " pierre" << (w > 1 ? "s" : "") << " noire" << (w > 1 ? "s" : "") << "\n";
+              << "  Blanc (W) a capture " << w << " pierre" << (w > 1 ? "s" : "") << " noire" << (w > 1 ? "s" : "") << "\n"
+              << "Total : " << b + w << " pierre" << (b + w > 1 ? "s" : "") << " capturee" << (b + w > 1 ? "s" : "") << "\n";
 }
 
 void libertiesCommand(const GoGame& game, const std::string& arg) {
@@ -413,7 +414,7 @@ void printHelp() {
               << "  komi [valeur]         afficher ou changer le komi (ex: komi 7.5)\n"
               << "  montrer | show        afficher le plateau avec le dernier coup entre parentheses\n"
               << "  taille [n]            nouvelle partie sur un plateau n x n (5 a 19, komi conserve)\n"
-              << "  captures | prisonniers afficher les pierres capturees par chaque joueur\n"
+              << "  captures | nbcaptures afficher le nombre de pierres capturees (par joueur et total)\n"
               << "  libertes <coord>      afficher les libertes du groupe contenant la pierre (ex: libertes D4)\n"
               << "  stats | statistiques  afficher les statistiques de la partie\n"
               << "  pierres [noir|blanc]  lister les coordonnees des pierres sur le plateau\n"
@@ -501,7 +502,7 @@ int main(int argc, char** argv) {
             showLastMove(game);
             continue;
         }
-        if (word == "captures" || word == "prisonniers") {
+        if (word == "captures" || word == "nbcaptures" || word == "prisonniers") {
             printCaptures(game);
             continue;
         }
@@ -659,7 +660,7 @@ int main(int argc, char** argv) {
                 showLastMove(game);
                 continue;
             }
-            if (word == "captures" || word == "prisonniers") {
+            if (word == "captures" || word == "nbcaptures" || word == "prisonniers") {
                 printCaptures(game);
                 continue;
             }

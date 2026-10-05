@@ -28,7 +28,7 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `komi [valeur]` : affiche ou change le komi (defaut 6.5, sauvegarde avec la partie)
 - `montrer` (ou `show`) : affiche le plateau avec le dernier coup entre parentheses, ex: `(B)`
 - `taille [n]` : demarre une nouvelle partie sur un plateau n x n (5 a 19, komi conserve, confirmation si une partie est en cours)
-- `captures` (ou `prisonniers`) : affiche les pierres capturees par chaque joueur
+- `captures` (ou `nbcaptures`, `prisonniers`) : affiche le nombre de pierres capturees par chaque joueur et le total
 - `libertes <coord>` : affiche les libertes du groupe contenant la pierre (ex: `libertes D4`), signale l'atari
 - `stats` (ou `statistiques`) : statistiques de la partie (coups, passes, pierres sur le plateau, captures, score estime)
 - `pierres [noir|blanc]` : liste les coordonnees des pierres presentes sur le plateau
