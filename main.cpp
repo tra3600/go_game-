@@ -30,6 +30,10 @@ struct GameClock {
 };
 GameClock gameClock;
 
+// Player names (default Noir / Blanc). Not stored in save files.
+std::string playerNames[2] = {"Noir", "Blanc"};
+const std::string& nameOf(char player) { return playerNames[player == GoGame::BLACK ? 0 : 1]; }
+
 std::string formatDuration(double seconds) {
     long s = static_cast<long>(seconds);
     char buf[32];
@@ -97,6 +101,28 @@ void printPlayTime(char player, bool over) {
               << "  (compte depuis le debut de la partie ou son chargement)\n\n";
 }
 
+void printPlayers() {
+    std::cout << "Joueurs :\n"
+              << "  Noir  (B) : " << playerNames[0] << "\n"
+              << "  Blanc (W) : " << playerNames[1] << "\n"
+              << "Pour changer un nom : nom noir <nom> | nom blanc <nom>\n";
+}
+
+void nameCommand(const std::string& arg) {
+    std::istringstream in(arg);
+    std::string side, name;
+    in >> side;
+    std::getline(in >> std::ws, name);
+    for (char& ch : side) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    int idx = (side == "noir" || side == "b") ? 0 : (side == "blanc" || side == "w") ? 1 : -1;
+    if (idx < 0 || name.empty() || name.size() > 20) {
+        std::cout << "Usage : nom noir <nom> | nom blanc <nom> (nom de 1 a 20 caracteres).\n";
+        return;
+    }
+    playerNames[idx] = name;
+    std::cout << (idx == 0 ? "Noir" : "Blanc") << " (" << (idx == 0 ? 'B' : 'W') << ") s'appelle maintenant " << name << ".\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -114,6 +140,7 @@ const Shortcut SHORTCUTS[] = {
     {"hi", "historique"},  {"pi", "pierres"},      {"sv", "sauvegarder"}, {"ch", "charger"},
     {"ta", "taille"},      {"ai", "aide"},        {"ve", "version"},
     {"cr", "credits"},
+    {"jo", "joueurs"},   {"no", "nom"},
     {"tp", "temps"},
 };
 
@@ -257,7 +284,7 @@ void printStats(const GoGame& game, char player) {
     std::cout << "\nStatistiques de la partie\n"
               << "  Plateau : " << game.getSize() << "x" << game.getSize() << ", komi " << game.getKomi() << "\n"
               << "  Coups joues : " << total << (game.isOver() ? " (partie terminee)" : "") << "\n";
-    if (!game.isOver()) std::cout << "  Trait : " << (player == GoGame::BLACK ? "Noir" : "Blanc") << "\n";
+    if (!game.isOver()) std::cout << "  Trait : " << nameOf(player) << "\n";
     for (int i = 0; i < 2; ++i) {
         char p = colors[i];
         std::cout << "  " << names[i] << " : " << game.stonesPlayed(p) << " pose(s), " << game.passesBy(p)
@@ -331,11 +358,13 @@ void printHelp() {
               << "  version | ver         afficher la version du jeu (aussi : ./go_game --version)\n"
               << "  credits               afficher les credits du jeu\n"
               << "  temps | time          afficher le temps de jeu (total et par joueur)\n"
+              << "  joueurs               afficher le nom des joueurs\n"
+              << "  nom noir|blanc <nom>  changer le nom d'un joueur\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -374,7 +403,7 @@ int main(int argc, char** argv) {
     while (!finished) {
     while (!game.isOver()) {
         game.printBoard();
-        std::cout << "Joueur " << player << " (" << (player == GoGame::BLACK ? "Noir" : "Blanc") << ") > ";
+        std::cout << "Joueur " << player << " (" << nameOf(player) << ") > ";
         std::string line;
         if (!std::getline(std::cin, line)) break;
 
@@ -439,6 +468,14 @@ int main(int argc, char** argv) {
         }
         if (word == "temps" || word == "time") {
             printPlayTime(player, game.isOver());
+            continue;
+        }
+        if (word == "joueurs" || word == "players") {
+            printPlayers();
+            continue;
+        }
+        if (word == "nom" || word == "name") {
+            nameCommand(arg);
             continue;
         }
         if (word == "score") {
@@ -567,6 +604,14 @@ int main(int argc, char** argv) {
                 printPlayTime(player, game.isOver());
                 continue;
             }
+            if (word == "joueurs" || word == "players") {
+                printPlayers();
+                continue;
+            }
+            if (word == "nom" || word == "name") {
+                nameCommand(arg);
+                continue;
+            }
             if (word == "score") {
                 printScore(game);
                 continue;
@@ -606,6 +651,6 @@ int main(int argc, char** argv) {
     double b, w;
     game.computeScore(b, w);
     std::cout << "Partie terminee. Score (aire + komi) - Noir : " << b << " | Blanc : " << w << "\n";
-    std::cout << (b > w ? "Noir gagne" : "Blanc gagne") << " de " << (b > w ? b - w : w - b) << " points.\n";
+    std::cout << (b > w ? nameOf(GoGame::BLACK) : nameOf(GoGame::WHITE)) << " gagne" << " de " << (b > w ? b - w : w - b) << " points.\n";
     return 0;
 }

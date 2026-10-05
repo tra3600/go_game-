@@ -38,5 +38,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `version` (ou `ve`) : affiche la version du jeu ; `./go_game --version` fait de meme sans lancer la partie
 - `credits` (ou `cr`) : affiche les credits et la licence (LGPL 2.1)
 - `temps` (ou `tp`) : affiche le temps de jeu (duree totale et temps de reflexion de chaque joueur)
+- `joueurs` (ou `jo`) : affiche le nom des joueurs ; `nom noir <nom>` / `nom blanc <nom>` les change (non sauvegarde dans le fichier de partie)
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
