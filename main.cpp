@@ -219,6 +219,11 @@ void printGroupCount(const GoGame& game) {
     std::cout << "Nombre de groupes : " << total << "\n" << lines;
 }
 
+void printPlayerCount() {
+    std::cout << "Nombre de joueurs : 2 (" << nameOf(GoGame::BLACK) << " avec les Noirs, "
+              << nameOf(GoGame::WHITE) << " avec les Blancs). Le jeu se joue toujours a deux.\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -238,6 +243,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"nj", "nbjoueurs"},
     {"ng", "nbgroupes"},
     {"nt", "nbterritoires"},
     {"lt", "libertestotal"},
@@ -475,11 +481,12 @@ void printHelp() {
               << "  libertestotal         afficher le nombre total de libertes de chaque joueur\n"
               << "  nbterritoires         afficher le nombre de territoires de chaque joueur\n"
               << "  nbgroupes             afficher le nombre de groupes de pierres\n"
+              << "  nbjoueurs             afficher le nombre de joueurs\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -627,6 +634,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbgroupes") {
             printGroupCount(game);
+            continue;
+        }
+        if (word == "nbjoueurs") {
+            printPlayerCount();
             continue;
         }
         if (word == "score") {
@@ -797,6 +808,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbgroupes") {
                 printGroupCount(game);
+                continue;
+            }
+            if (word == "nbjoueurs") {
+                printPlayerCount();
                 continue;
             }
             if (word == "score") {
