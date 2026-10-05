@@ -334,6 +334,22 @@ void printIsolated(const GoGame& game) {
               << "(Isolee = sans pierre alliee adjacente, c'est-a-dire un groupe d'une seule pierre.)\n";
 }
 
+void printConnected(const GoGame& game) {
+    int total = 0;
+    std::string lines;
+    for (char p : {GoGame::BLACK, GoGame::WHITE}) {
+        int groups, largest;
+        game.groupStats(p, groups, largest);
+        int isolated = static_cast<int>(game.isolatedStones(p).size());
+        int connected = game.stonesOnBoard(p) - isolated;
+        total += connected;
+        lines += "  " + nameOf(p) + " (" + p + ") : " + std::to_string(connected) + " pierre(s) connectee(s) en " +
+                 std::to_string(groups - isolated) + " groupe(s)\n";
+    }
+    std::cout << "Pierres connectees : " << total << "\n" << lines
+              << "(Connectee = au moins une pierre alliee adjacente ; le complement de `nbisolees`.)\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -353,6 +369,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"cn", "nbconnectees"},
     {"is", "nbisolees"},
     {"se", "nbsecurite"},
     {"dg", "nbdanger"},
@@ -610,11 +627,12 @@ void printHelp() {
               << "  nbdanger              afficher le nombre de pierres en danger (1 ou 2 libertes)\n"
               << "  nbsecurite            afficher le nombre de pierres en securite (3 libertes ou plus)\n"
               << "  nbisolees             afficher le nombre de pierres isolees\n"
+              << "  nbconnectees          afficher le nombre de pierres connectees\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbisolees', 'nbsecurite', 'nbdanger', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbconnectees', 'nbisolees', 'nbsecurite', 'nbdanger', 'nbcapturables', 'nbatari', 'nbneutres', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -802,6 +820,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbisolees") {
             printIsolated(game);
+            continue;
+        }
+        if (word == "nbconnectees") {
+            printConnected(game);
             continue;
         }
         if (word == "score") {
@@ -1012,6 +1034,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbisolees") {
                 printIsolated(game);
+                continue;
+            }
+            if (word == "nbconnectees") {
+                printConnected(game);
                 continue;
             }
             if (word == "score") {

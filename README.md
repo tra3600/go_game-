@@ -58,5 +58,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `nbdanger` (ou `dg`) : nombre de pierres en danger, c'est-a-dire dans un groupe a 1 liberte (atari) ou 2 libertes
 - `nbsecurite` (ou `se`) : nombre de pierres en securite (groupes a 3 libertes ou plus, estimation)
 - `nbisolees` (ou `is`) : nombre de pierres isolees (sans pierre alliee adjacente), avec leurs coordonnees
+- `nbconnectees` (ou `cn`) : nombre de pierres connectees (avec au moins une pierre alliee adjacente) et de groupes correspondants
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
