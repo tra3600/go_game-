@@ -52,6 +52,10 @@ public:
     // False if there is no stone there.
     bool groupInfo(int row, int col, std::vector<std::string>& stones, std::vector<std::string>& liberties) const;
 
+    int stonesPlayed(char player) const;   // stones placed (not passes)
+    int passesBy(char player) const;
+    int stonesOnBoard(char player) const;  // live stones currently on the board
+
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
     void computeScore(double& blackScore, double& whiteScore) const;

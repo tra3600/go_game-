@@ -172,6 +172,25 @@ void libertiesCommand(const GoGame& game, const std::string& arg) {
               << (libs.size() == 1 ? "  (atari !)" : "") << "\n";
 }
 
+void printStats(const GoGame& game, char player) {
+    const char colors[2] = {GoGame::BLACK, GoGame::WHITE};
+    const char* names[2] = {"Noir (B)", "Blanc (W)"};
+    int total = static_cast<int>(game.moveList().size());
+    std::cout << "\nStatistiques de la partie\n"
+              << "  Plateau : " << game.getSize() << "x" << game.getSize() << ", komi " << game.getKomi() << "\n"
+              << "  Coups joues : " << total << (game.isOver() ? " (partie terminee)" : "") << "\n";
+    if (!game.isOver()) std::cout << "  Trait : " << (player == GoGame::BLACK ? "Noir" : "Blanc") << "\n";
+    for (int i = 0; i < 2; ++i) {
+        char p = colors[i];
+        std::cout << "  " << names[i] << " : " << game.stonesPlayed(p) << " pose(s), " << game.passesBy(p)
+                  << " passe(s), " << game.stonesOnBoard(p) << " sur le plateau, "
+                  << game.captures(p) << " capture(s)\n";
+    }
+    double b, w;
+    game.computeScore(b, w);
+    std::cout << "  Score estime : Noir " << b << " | Blanc " << w << "\n\n";
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -187,11 +206,12 @@ void printHelp() {
               << "  taille [n]            nouvelle partie sur un plateau n x n (5 a 19, komi conserve)\n"
               << "  captures | prisonniers afficher les pierres capturees par chaque joueur\n"
               << "  libertes <coord>      afficher les libertes du groupe contenant la pierre (ex: libertes D4)\n"
+              << "  stats | statistiques  afficher les statistiques de la partie\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -257,6 +277,10 @@ int main(int argc, char** argv) {
         }
         if (word == "libertes" || word == "liberties") {
             libertiesCommand(game, arg);
+            continue;
+        }
+        if (word == "stats" || word == "statistiques") {
+            printStats(game, player);
             continue;
         }
         if (word == "score") {
@@ -348,6 +372,10 @@ int main(int argc, char** argv) {
             }
             if (word == "libertes" || word == "liberties") {
                 libertiesCommand(game, arg);
+                continue;
+            }
+            if (word == "stats" || word == "statistiques") {
+                printStats(game, player);
                 continue;
             }
             if (word == "score") {

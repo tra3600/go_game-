@@ -204,6 +204,24 @@ std::string GoGame::describe(MoveResult r) {
     return "";
 }
 
+int GoGame::stonesPlayed(char player) const {
+    int n = 0;
+    for (const Move& m : moves) n += (m.player == player && !m.isPass);
+    return n;
+}
+
+int GoGame::passesBy(char player) const {
+    int n = 0;
+    for (const Move& m : moves) n += (m.player == player && m.isPass);
+    return n;
+}
+
+int GoGame::stonesOnBoard(char player) const {
+    int n = 0;
+    for (const auto& row : board) for (char ch : row) n += (ch == player);
+    return n;
+}
+
 std::string GoGame::coordName(int row, int col) const {
     return std::string(1, COLUMNS[col]) + std::to_string(size - row);
 }
