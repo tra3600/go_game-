@@ -49,15 +49,43 @@ int readBoardSize() {
         std::cout << "Taille invalide.\n";
     }
 }
+
+// Splits "commande argument" : returns the lowercase command, `arg` receives the rest (case preserved).
+std::string splitCommand(const std::string& line, std::string& arg) {
+    std::istringstream in(line);
+    std::string word;
+    in >> word;
+    std::getline(in >> std::ws, arg);
+    for (char& ch : word) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    return word;
 }
 
-int main() {
-    int size = readBoardSize();
-    if (size < 0) return 0;
+void saveCommand(const GoGame& game, const std::string& arg) {
+    std::string path = arg.empty() ? "partie.go" : arg;
+    if (game.saveToFile(path)) std::cout << "Partie sauvegardee dans " << path << ".\n";
+    else std::cout << "Echec de la sauvegarde dans " << path << ".\n";
+}
+}
 
-    GoGame game(size);
+int main(int argc, char** argv) {
+    int size = 0;
     char player = GoGame::BLACK;
-    std::cout << "Commandes : D4 (colonne+ligne) ou \"ligne colonne\", 'pass' pour passer, 'annuler' pour annuler le dernier coup, 'quit' pour quitter.\n"
+    GoGame game(5);
+    if (argc > 1) {
+        std::string err;
+        if (!game.loadFromFile(argv[1], player, err)) {
+            std::cout << err << "\n";
+            return 1;
+        }
+        size = game.getSize();
+        std::cout << "Partie chargee depuis " << argv[1] << ".\n";
+    } else {
+        size = readBoardSize();
+        if (size < 0) return 0;
+        game = GoGame(size);
+    }
+    std::cout << "Commandes : D4 (colonne+ligne) ou \"ligne colonne\", 'pass' pour passer, 'annuler' pour annuler le dernier coup,\n"
+              << "'sauvegarder [fichier]' / 'charger [fichier]' (defaut : partie.go), 'quit' pour quitter.\n"
               << "Deux passes consecutives terminent la partie.\n";
 
     bool finished = false;
@@ -73,6 +101,23 @@ int main() {
         while (!cmd.empty() && std::isspace(static_cast<unsigned char>(cmd.back()))) cmd.pop_back();
         if (cmd.empty()) continue;
         if (cmd == "quit" || cmd == "q") return 0;
+        std::string arg;
+        std::string word = splitCommand(line, arg);
+        if (word == "sauvegarder" || word == "save") {
+            saveCommand(game, arg);
+            continue;
+        }
+        if (word == "charger" || word == "load") {
+            std::string err;
+            std::string path = arg.empty() ? "partie.go" : arg;
+            if (game.loadFromFile(path, player, err)) {
+                size = game.getSize();
+                std::cout << "Partie chargee depuis " << path << ".\n";
+            } else {
+                std::cout << err << "\n";
+            }
+            continue;
+        }
         if (cmd == "undo" || cmd == "annuler" || cmd == "u") {
             if (game.undo(player)) std::cout << "Dernier coup annule.\n";
             else std::cout << "Rien a annuler.\n";
@@ -111,6 +156,12 @@ int main() {
             for (char ch : line) cmd += static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
             while (!cmd.empty() && std::isspace(static_cast<unsigned char>(cmd.back()))) cmd.pop_back();
             if (cmd == "ok" || cmd == "done") break;
+            std::string arg;
+            std::string word = splitCommand(line, arg);
+            if (word == "sauvegarder" || word == "save") {
+                saveCommand(game, arg);
+                continue;
+            }
             if (cmd == "quit" || cmd == "q") return 0;
             if (cmd == "undo" || cmd == "annuler" || cmd == "u") {
                 game.undo(player);

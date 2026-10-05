@@ -1,6 +1,8 @@
 #include "GoGame.h"
 #include <cctype>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 namespace {
 const int DR[4] = {-1, 1, 0, 0};
@@ -96,6 +98,7 @@ MoveResult GoGame::placeStone(int row, int col, char player) {
     if (history.count(key)) return MoveResult::Ko;
 
     saveSnapshot(player);
+    moves.push_back({player, false, row, col});
     board = std::move(next);
     history.insert(key);
     (player == BLACK ? capturedByBlack : capturedByWhite) += removed;
@@ -105,6 +108,7 @@ MoveResult GoGame::placeStone(int row, int col, char player) {
 
 void GoGame::pass(char player) {
     saveSnapshot(player);
+    moves.push_back({player, true, -1, -1});
     ++consecutivePasses;
 }
 
@@ -137,6 +141,7 @@ bool GoGame::undo(char& player) {
     capturedByWhite = s.capW;
     player = s.mover;
     undoStack.pop_back();
+    moves.pop_back();
     for (auto& row : dead) row.assign(size, false);
     return true;
 }
@@ -192,4 +197,50 @@ std::string GoGame::describe(MoveResult r) {
         case MoveResult::GameOver: return "La partie est terminee.";
     }
     return "";
+}
+
+bool GoGame::saveToFile(const std::string& path) const {
+    std::ofstream out(path);
+    if (!out) return false;
+    out << "GOGAME 1\n" << size << ' ' << komi << '\n';
+    for (const Move& m : moves) {
+        out << m.player << ' ';
+        if (m.isPass) out << "pass\n";
+        else out << m.row << ' ' << m.col << '\n';
+    }
+    return static_cast<bool>(out);
+}
+
+bool GoGame::loadFromFile(const std::string& path, char& player, std::string& error) {
+    std::ifstream in(path);
+    if (!in) { error = "Impossible d'ouvrir le fichier."; return false; }
+    std::string magic;
+    int version = 0, newSize = 0;
+    double newKomi = 0;
+    if (!(in >> magic >> version >> newSize >> newKomi) || magic != "GOGAME" || version != 1 ||
+        newSize < 5 || newSize > 19) {
+        error = "Fichier de sauvegarde invalide.";
+        return false;
+    }
+    GoGame loaded(newSize, newKomi);
+    char next = BLACK;
+    char who;
+    std::string a;
+    while (in >> who >> a) {
+        if (who != BLACK && who != WHITE) { error = "Fichier corrompu (joueur inconnu)."; return false; }
+        if (a == "pass") {
+            loaded.pass(who);
+        } else {
+            int row, col;
+            try { row = std::stoi(a); } catch (...) { error = "Fichier corrompu."; return false; }
+            if (!(in >> col) || loaded.placeStone(row, col, who) != MoveResult::Ok) {
+                error = "Fichier corrompu (coup illegal).";
+                return false;
+            }
+        }
+        next = opponent(who);
+    }
+    *this = std::move(loaded);
+    player = next;
+    return true;
 }

@@ -37,6 +37,12 @@ public:
     // Undoes the last move or pass; sets `player` to whoever played it. False if nothing to undo.
     bool undo(char& player);
 
+    // Saves the game as its move list (so undo and ko history survive a reload).
+    bool saveToFile(const std::string& path) const;
+    // Replaces this game by the one stored in `path`; `player` becomes the side to move.
+    // On failure the game is left untouched and `error` explains why.
+    bool loadFromFile(const std::string& path, char& player, std::string& error);
+
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
     void computeScore(double& blackScore, double& whiteScore) const;
@@ -57,6 +63,8 @@ private:
         char mover;
     };
     std::vector<Snapshot> undoStack;
+    struct Move { char player; bool isPass; int row, col; };
+    std::vector<Move> moves;
     void saveSnapshot(char mover);
     std::vector<std::vector<bool>> dead;
     int consecutivePasses = 0;
