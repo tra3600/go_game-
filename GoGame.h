@@ -32,6 +32,7 @@ public:
     // Dead-stone marking (after both players passed): toggles the whole group at (row,col).
     bool toggleDead(int row, int col);
     int deadCount() const;
+    int deadCount(char player) const;  // marked-dead stones of one colour
     // Cancels the end of the game: clears dead marks and the pass counter.
     void resume();
 

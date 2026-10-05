@@ -151,6 +151,13 @@ bool GoGame::undo(char& player) {
     return true;
 }
 
+int GoGame::deadCount(char player) const {
+    int n = 0;
+    for (int r = 0; r < size; ++r)
+        for (int c = 0; c < size; ++c) n += (dead[r][c] && board[r][c] == player);
+    return n;
+}
+
 void GoGame::resume() {
     consecutivePasses = 0;
     for (auto& row : dead) row.assign(size, false);

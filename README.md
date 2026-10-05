@@ -49,5 +49,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `nbterritoires` (ou `nt`) : nombre de territoires distincts de chaque joueur et points qu'ils couvrent
 - `nbgroupes` (ou `ng`) : nombre de groupes de pierres de chaque joueur et taille du plus gros
 - `nbjoueurs` (ou `nj`) : affiche le nombre de joueurs (toujours 2) et leurs noms
+- `nbmortes` (ou `nm`) : nombre de pierres marquees mortes (par couleur), utile pendant le marquage
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
