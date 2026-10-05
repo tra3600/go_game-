@@ -1,4 +1,6 @@
 #include <cctype>
+#include <chrono>
+#include <cstdio>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -6,6 +8,36 @@
 
 namespace {
 const std::string COLUMNS = "ABCDEFGHJKLMNOPQRST";
+
+// Play time: the time between two moves is credited to the player who was to move.
+// Not stored in save files, so it restarts on load / new game.
+struct GameClock {
+    using Clock = std::chrono::steady_clock;
+    Clock::time_point start = Clock::now();
+    Clock::time_point lastTick = start;
+    double used[2] = {0, 0};  // seconds spent by Black, White
+
+    static int index(char player) { return player == GoGame::BLACK ? 0 : 1; }
+    void reset() { *this = GameClock(); }
+    void pause() { lastTick = Clock::now(); }  // after undo / resume: the elapsed gap is credited to nobody
+    void moveDone(char player) {
+        auto now = Clock::now();
+        used[index(player)] += std::chrono::duration<double>(now - lastTick).count();
+        lastTick = now;
+    }
+    double pending() const { return std::chrono::duration<double>(Clock::now() - lastTick).count(); }
+    double total() const { return std::chrono::duration<double>(Clock::now() - start).count(); }
+};
+GameClock gameClock;
+
+std::string formatDuration(double seconds) {
+    long s = static_cast<long>(seconds);
+    char buf[32];
+    if (s >= 3600) std::snprintf(buf, sizeof buf, "%ldh %02ldmin %02lds", s / 3600, (s % 3600) / 60, s % 60);
+    else if (s >= 60) std::snprintf(buf, sizeof buf, "%ldmin %02lds", s / 60, s % 60);
+    else std::snprintf(buf, sizeof buf, "%lds", s);
+    return buf;
+}
 
 // Parses "D4" (column letter + row number counted from the bottom) or "x y" (row col, 1-based from top-left).
 bool parseMove(const std::string& line, int size, int& row, int& col) {
@@ -56,6 +88,15 @@ void printVersion() {
     std::cout << "Jeu de Go (C++) version " << GAME_VERSION << " - format de sauvegarde 1\n";
 }
 
+void printPlayTime(char player, bool over) {
+    double b = gameClock.used[0], w = gameClock.used[1];
+    if (!over) (player == GoGame::BLACK ? b : w) += gameClock.pending();
+    std::cout << "\nTemps de jeu\n"
+              << "  Duree totale : " << formatDuration(gameClock.total()) << "\n"
+              << "  Temps de reflexion - Noir : " << formatDuration(b) << " | Blanc : " << formatDuration(w) << "\n"
+              << "  (compte depuis le debut de la partie ou son chargement)\n\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -73,6 +114,7 @@ const Shortcut SHORTCUTS[] = {
     {"hi", "historique"},  {"pi", "pierres"},      {"sv", "sauvegarder"}, {"ch", "charger"},
     {"ta", "taille"},      {"ai", "aide"},        {"ve", "version"},
     {"cr", "credits"},
+    {"tp", "temps"},
 };
 
 // Splits "commande argument" : returns the lowercase command (shortcuts expanded),
@@ -175,6 +217,7 @@ void sizeCommand(GoGame& game, char& player, int& size, const std::string& arg) 
     }
     game = GoGame(n, game.getKomi());
     player = GoGame::BLACK;
+    gameClock.reset();
     size = n;
     std::cout << "Nouvelle partie sur un plateau " << n << "x" << n << ".\n";
 }
@@ -287,11 +330,12 @@ void printHelp() {
               << "  raccourcis            afficher les raccourcis clavier\n"
               << "  version | ver         afficher la version du jeu (aussi : ./go_game --version)\n"
               << "  credits               afficher les credits du jeu\n"
+              << "  temps | time          afficher le temps de jeu (total et par joueur)\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -315,12 +359,14 @@ int main(int argc, char** argv) {
             std::cout << err << "\n";
             return 1;
         }
+        gameClock.reset();
         size = game.getSize();
         std::cout << "Partie chargee depuis " << argv[1] << ".\n";
     } else {
         size = readBoardSize();
         if (size < 0) return 0;
         game = GoGame(size);
+        gameClock.reset();
     }
     std::cout << "Tapez 'aide' pour voir les commandes.\n";
 
@@ -391,6 +437,10 @@ int main(int argc, char** argv) {
             printCredits();
             continue;
         }
+        if (word == "temps" || word == "time") {
+            printPlayTime(player, game.isOver());
+            continue;
+        }
         if (word == "score") {
             printScore(game);
             continue;
@@ -411,6 +461,7 @@ int main(int argc, char** argv) {
             std::string err;
             std::string path = arg.empty() ? "partie.go" : arg;
             if (game.loadFromFile(path, player, err)) {
+                gameClock.reset();
                 size = game.getSize();
                 std::cout << "Partie chargee depuis " << path << ".\n";
             } else {
@@ -419,12 +470,13 @@ int main(int argc, char** argv) {
             continue;
         }
         if (cmd == "undo" || cmd == "annuler" || cmd == "u") {
-            if (game.undo(player)) std::cout << "Dernier coup annule.\n";
+            if (game.undo(player)) { gameClock.pause(); std::cout << "Dernier coup annule.\n"; }
             else std::cout << "Rien a annuler.\n";
             continue;
         }
         if (cmd == "pass" || cmd == "p") {
             game.pass(player);
+            gameClock.moveDone(player);
             player = GoGame::opponent(player);
             continue;
         }
@@ -439,6 +491,7 @@ int main(int argc, char** argv) {
             std::cout << GoGame::describe(r) << " Reessayez.\n";
             continue;
         }
+        gameClock.moveDone(player);
         player = GoGame::opponent(player);
     }
 
@@ -510,6 +563,10 @@ int main(int argc, char** argv) {
                 printCredits();
                 continue;
             }
+            if (word == "temps" || word == "time") {
+                printPlayTime(player, game.isOver());
+                continue;
+            }
             if (word == "score") {
                 printScore(game);
                 continue;
@@ -525,12 +582,14 @@ int main(int argc, char** argv) {
             if (cmd == "quit" || cmd == "q") return 0;
             if (cmd == "undo" || cmd == "annuler" || cmd == "u") {
                 game.undo(player);
+                gameClock.pause();
                 resumed = true;
                 std::cout << "Derniere passe annulee. Joueur " << player << " a la main.\n";
                 break;
             }
             if (cmd == "reprendre" || cmd == "resume") {
                 game.resume();
+                gameClock.pause();
                 resumed = true;
                 std::cout << "La partie reprend. Joueur " << player << " a la main.\n";
                 break;
