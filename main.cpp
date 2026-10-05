@@ -57,7 +57,7 @@ int main() {
 
     GoGame game(size);
     char player = GoGame::BLACK;
-    std::cout << "Commandes : D4 (colonne+ligne) ou \"ligne colonne\", 'pass' pour passer, 'quit' pour quitter.\n"
+    std::cout << "Commandes : D4 (colonne+ligne) ou \"ligne colonne\", 'pass' pour passer, 'annuler' pour annuler le dernier coup, 'quit' pour quitter.\n"
               << "Deux passes consecutives terminent la partie.\n";
 
     bool finished = false;
@@ -73,6 +73,11 @@ int main() {
         while (!cmd.empty() && std::isspace(static_cast<unsigned char>(cmd.back()))) cmd.pop_back();
         if (cmd.empty()) continue;
         if (cmd == "quit" || cmd == "q") return 0;
+        if (cmd == "undo" || cmd == "annuler" || cmd == "u") {
+            if (game.undo(player)) std::cout << "Dernier coup annule.\n";
+            else std::cout << "Rien a annuler.\n";
+            continue;
+        }
         if (cmd == "pass" || cmd == "p") {
             game.pass(player);
             player = GoGame::opponent(player);
@@ -107,6 +112,12 @@ int main() {
             while (!cmd.empty() && std::isspace(static_cast<unsigned char>(cmd.back()))) cmd.pop_back();
             if (cmd == "ok" || cmd == "done") break;
             if (cmd == "quit" || cmd == "q") return 0;
+            if (cmd == "undo" || cmd == "annuler" || cmd == "u") {
+                game.undo(player);
+                resumed = true;
+                std::cout << "Derniere passe annulee. Joueur " << player << " a la main.\n";
+                break;
+            }
             if (cmd == "reprendre" || cmd == "resume") {
                 game.resume();
                 resumed = true;

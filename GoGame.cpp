@@ -95,6 +95,7 @@ MoveResult GoGame::placeStone(int row, int col, char player) {
     std::string key = serialize(next);
     if (history.count(key)) return MoveResult::Ko;
 
+    saveSnapshot(player);
     board = std::move(next);
     history.insert(key);
     (player == BLACK ? capturedByBlack : capturedByWhite) += removed;
@@ -102,7 +103,8 @@ MoveResult GoGame::placeStone(int row, int col, char player) {
     return MoveResult::Ok;
 }
 
-void GoGame::pass(char) {
+void GoGame::pass(char player) {
+    saveSnapshot(player);
     ++consecutivePasses;
 }
 
@@ -119,6 +121,24 @@ int GoGame::deadCount() const {
     int n = 0;
     for (const auto& row : dead) for (bool d : row) n += d;
     return n;
+}
+
+void GoGame::saveSnapshot(char mover) {
+    undoStack.push_back({board, history, consecutivePasses, capturedByBlack, capturedByWhite, mover});
+}
+
+bool GoGame::undo(char& player) {
+    if (undoStack.empty()) return false;
+    Snapshot& s = undoStack.back();
+    board = std::move(s.board);
+    history = std::move(s.history);
+    consecutivePasses = s.passes;
+    capturedByBlack = s.capB;
+    capturedByWhite = s.capW;
+    player = s.mover;
+    undoStack.pop_back();
+    for (auto& row : dead) row.assign(size, false);
+    return true;
 }
 
 void GoGame::resume() {

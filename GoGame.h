@@ -34,6 +34,9 @@ public:
     // Cancels the end of the game: clears dead marks and the pass counter.
     void resume();
 
+    // Undoes the last move or pass; sets `player` to whoever played it. False if nothing to undo.
+    bool undo(char& player);
+
     int captures(char player) const { return player == BLACK ? capturedByBlack : capturedByWhite; }
     // Area scoring (stones + surrounded territory), komi added to White.
     void computeScore(double& blackScore, double& whiteScore) const;
@@ -47,6 +50,14 @@ private:
     double komi;
     std::vector<std::vector<char>> board;
     std::set<std::string> history;  // positional superko
+    struct Snapshot {
+        std::vector<std::vector<char>> board;
+        std::set<std::string> history;
+        int passes, capB, capW;
+        char mover;
+    };
+    std::vector<Snapshot> undoStack;
+    void saveSnapshot(char mover);
     std::vector<std::vector<bool>> dead;
     int consecutivePasses = 0;
     int capturedByBlack = 0;
