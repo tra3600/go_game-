@@ -144,6 +144,13 @@ void sizeCommand(GoGame& game, char& player, int& size, const std::string& arg) 
     std::cout << "Nouvelle partie sur un plateau " << n << "x" << n << ".\n";
 }
 
+void printCaptures(const GoGame& game) {
+    int b = game.captures(GoGame::BLACK), w = game.captures(GoGame::WHITE);
+    std::cout << "Pierres capturees :\n"
+              << "  Noir (B) a capture " << b << " pierre" << (b > 1 ? "s" : "") << " blanche" << (b > 1 ? "s" : "") << "\n"
+              << "  Blanc (W) a capture " << w << " pierre" << (w > 1 ? "s" : "") << " noire" << (w > 1 ? "s" : "") << "\n";
+}
+
 void printHelp() {
     std::cout << "\nCommandes :\n"
               << "  D4 | ligne colonne    jouer une pierre (ex: D4 ou 4 4)\n"
@@ -157,11 +164,12 @@ void printHelp() {
               << "  komi [valeur]         afficher ou changer le komi (ex: komi 7.5)\n"
               << "  montrer | show        afficher le plateau avec le dernier coup entre parentheses\n"
               << "  taille [n]            nouvelle partie sur un plateau n x n (5 a 19, komi conserve)\n"
+              << "  captures | prisonniers afficher les pierres capturees par chaque joueur\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -219,6 +227,10 @@ int main(int argc, char** argv) {
         }
         if (word == "montrer" || word == "show") {
             showLastMove(game);
+            continue;
+        }
+        if (word == "captures" || word == "prisonniers") {
+            printCaptures(game);
             continue;
         }
         if (word == "score") {
@@ -302,6 +314,10 @@ int main(int argc, char** argv) {
             }
             if (word == "montrer" || word == "show") {
                 showLastMove(game);
+                continue;
+            }
+            if (word == "captures" || word == "prisonniers") {
+                printCaptures(game);
                 continue;
             }
             if (word == "score") {
