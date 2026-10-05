@@ -316,6 +316,13 @@ void GoGame::groupStats(char player, int& groups, int& largest) const {
     }
 }
 
+int GoGame::neutralPoints() const {
+    int n = 0;
+    for (const auto& row : territoryMap())
+        for (char v : row) n += (v == EMPTY);
+    return n;
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);
