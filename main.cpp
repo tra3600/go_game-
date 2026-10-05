@@ -242,6 +242,15 @@ void printPlacedStones(const GoGame& game) {
     }
 }
 
+void printLiveStones(const GoGame& game) {
+    int b = game.stonesOnBoard(GoGame::BLACK) - game.deadCount(GoGame::BLACK);
+    int w = game.stonesOnBoard(GoGame::WHITE) - game.deadCount(GoGame::WHITE);
+    std::cout << "Pierres vivantes : " << b + w << "\n"
+              << "  " << nameOf(GoGame::BLACK) << " (B) : " << b << "\n"
+              << "  " << nameOf(GoGame::WHITE) << " (W) : " << w << "\n"
+              << "(" << game.deadCount() << " pierre(s) marquee(s) morte(s) non comptee(s).)\n";
+}
+
 void printCredits() {
     std::cout << "\nCredits\n"
               << "  Jeu de Go en C++ - version " << GAME_VERSION << "\n"
@@ -261,6 +270,7 @@ const Shortcut SHORTCUTS[] = {
     {"cr", "credits"},
     {"da", "date"},
     {"he", "heure"},
+    {"nv", "nbvivantes"},
     {"po", "nbposees"},
     {"nm", "nbmortes"},
     {"nj", "nbjoueurs"},
@@ -504,11 +514,12 @@ void printHelp() {
               << "  nbjoueurs             afficher le nombre de joueurs\n"
               << "  nbmortes              afficher le nombre de pierres marquees mortes\n"
               << "  nbposees              afficher le nombre de pierres posees\n"
+              << "  nbvivantes            afficher le nombre de pierres vivantes\n"
               << "  aide | help | ?       afficher cette aide\n"
               << "  quit | q              quitter\n"
               << "Phase de marquage : coordonnee = marquer/demarquer un groupe mort, 'ok' = valider le score,\n"
               << "  'reprendre' = continuer la partie, 'annuler' = annuler la derniere passe,\n"
-              << "  'score', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
+              << "  'score', 'nbvivantes', 'nbposees', 'nbmortes', 'nbjoueurs', 'nbgroupes', 'nbterritoires', 'libertestotal', 'nbpierres', 'coups', 'langue', 'fuseau', 'heure', 'date', 'joueurs', 'temps', 'credits', 'version', 'raccourcis', 'regles', 'territoire', 'pierres', 'stats', 'libertes', 'captures', 'montrer', 'komi', 'historique', 'dernier', 'sauvegarder' et 'aide' restent disponibles.\n\n";
 }
 
 void saveCommand(const GoGame& game, const std::string& arg) {
@@ -668,6 +679,10 @@ int main(int argc, char** argv) {
         }
         if (word == "nbposees") {
             printPlacedStones(game);
+            continue;
+        }
+        if (word == "nbvivantes") {
+            printLiveStones(game);
             continue;
         }
         if (word == "score") {
@@ -850,6 +865,10 @@ int main(int argc, char** argv) {
             }
             if (word == "nbposees") {
                 printPlacedStones(game);
+                continue;
+            }
+            if (word == "nbvivantes") {
+                printLiveStones(game);
                 continue;
             }
             if (word == "score") {
