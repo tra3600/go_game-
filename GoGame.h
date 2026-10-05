@@ -54,6 +54,9 @@ public:
 
     // Coordinates ("D4") of the stones of `player` currently on the board, row by row from the top.
     std::vector<std::string> stonePositions(char player) const;
+    // Liberty summary for `player`: number of groups, sum of each group's liberties,
+    // and the fewest liberties of any group (0 if no group).
+    void libertyStats(char player, int& groups, int& totalLiberties, int& weakest) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board

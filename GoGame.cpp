@@ -248,6 +248,24 @@ std::vector<std::string> GoGame::stonePositions(char player) const {
     return list;
 }
 
+void GoGame::libertyStats(char player, int& groups, int& totalLiberties, int& weakest) const {
+    groups = 0;
+    totalLiberties = 0;
+    weakest = 0;
+    std::vector<std::vector<bool>> counted(size, std::vector<bool>(size, false));
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (board[r][c] != player || counted[r][c]) continue;
+            Group g;
+            int libs = collectGroup(board, r, c, g);
+            for (auto& [gr, gc] : g) counted[gr][gc] = true;
+            ++groups;
+            totalLiberties += libs;
+            if (groups == 1 || libs < weakest) weakest = libs;
+        }
+    }
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);
