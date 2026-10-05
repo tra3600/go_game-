@@ -70,6 +70,8 @@ public:
     void capturable(char player, int& groups, int& stones) const;
     // Stones of `player` in groups with 1 liberty (atari) and with exactly 2 liberties.
     void dangerStats(char player, int& atariStones, int& twoLibertyStones) const;
+    // Stones of `player` with no friendly neighbour (groups of one stone), as coordinates.
+    std::vector<std::string> isolatedStones(char player) const;
     int stonesPlayed(char player) const;   // stones placed (not passes)
     int passesBy(char player) const;
     int stonesOnBoard(char player) const;  // live stones currently on the board

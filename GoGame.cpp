@@ -392,6 +392,22 @@ void GoGame::dangerStats(char player, int& atariStones, int& twoLibertyStones) c
     }
 }
 
+std::vector<std::string> GoGame::isolatedStones(char player) const {
+    std::vector<std::string> list;
+    for (int r = 0; r < size; ++r) {
+        for (int c = 0; c < size; ++c) {
+            if (board[r][c] != player) continue;
+            bool friendly = false;
+            for (int d = 0; d < 4; ++d) {
+                int nr = r + DR[d], nc = c + DC[d];
+                if (inBoard(nr, nc) && board[nr][nc] == player) friendly = true;
+            }
+            if (!friendly) list.push_back(coordName(r, c));
+        }
+    }
+    return list;
+}
+
 int GoGame::stonesPlayed(char player) const {
     int n = 0;
     for (const Move& m : moves) n += (m.player == player && !m.isPass);

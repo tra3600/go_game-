@@ -57,5 +57,6 @@ Le jeu de Go est un jeu de stratégie complexe qui se joue sur un plateau de 19x
 - `nbcapturables` (ou `cp`) : nombre de pierres que l'adversaire peut legalement capturer au prochain coup (atari, ko pris en compte)
 - `nbdanger` (ou `dg`) : nombre de pierres en danger, c'est-a-dire dans un groupe a 1 liberte (atari) ou 2 libertes
 - `nbsecurite` (ou `se`) : nombre de pierres en securite (groupes a 3 libertes ou plus, estimation)
+- `nbisolees` (ou `is`) : nombre de pierres isolees (sans pierre alliee adjacente), avec leurs coordonnees
 - `aide` (ou `help`, `?`) : affiche la liste des commandes
 - `pass` : passer ; `quit` : quitter
